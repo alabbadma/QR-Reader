@@ -43,6 +43,59 @@
       padding:20px 14px 26px;
     }
 
+    .page{
+      position:relative;
+    }
+
+    .side-legend{
+      position:fixed;
+      top:20px;
+      right:18px;
+      width:170px;
+      background:rgba(255,255,255,.94);
+      border:1px solid #dbe8df;
+      border-radius:16px;
+      box-shadow:0 10px 24px rgba(16,69,43,.08);
+      padding:8px 9px;
+      z-index:30;
+    }
+
+    .side-legend-title{
+      font-size:10px;
+      font-weight:700;
+      color:#5d7468;
+      margin:0 0 7px;
+      text-align:center;
+      line-height:1.4;
+    }
+
+    .side-legend-list{
+      display:grid;
+      gap:6px;
+    }
+
+    .side-legend-item{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      font-size:10px;
+      color:#345444;
+      line-height:1.4;
+      white-space:nowrap;
+    }
+
+    .dot{
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      flex:0 0 9px;
+      box-shadow:0 0 0 2px rgba(255,255,255,.7), 0 0 10px rgba(0,0,0,.06);
+    }
+    .dot.info{background:#2577d8}
+    .dot.success{background:#11a25f}
+    .dot.warn{background:#ef9b19}
+    .dot.error{background:#d84343}
+
     .shell{
       width:min(820px,100%);
       background:rgba(255,255,255,.94);
@@ -160,34 +213,6 @@
       min-height:54px;
     }
 
-    .legend{
-      margin-top:14px;
-      width:100%;
-      display:grid;
-      gap:8px;
-    }
-
-    .legend-row{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-
-    .chip{
-      border-radius:999px;
-      padding:4px 9px;
-      font-size:10px;
-      line-height:1.2;
-      font-weight:700;
-      border:1px solid transparent;
-      white-space:nowrap;
-    }
-
-    .chip.success{background:#ecfbf2;color:#0b7a4b;border-color:#cdeed9}
-    .chip.info{background:#edf4ff;color:#2577d8;border-color:#d5e4fb}
-    .chip.warn{background:#fff5e7;color:#c67a0e;border-color:#f6ddb2}
-    .chip.error{background:#ffefef;color:#ce3c3c;border-color:#f5c7c7}
 
     .info-grid{
       display:grid;
@@ -383,16 +408,32 @@
       .reader-box, #reader{min-height:260px}
       .controls{grid-template-columns:1fr}
       .title{font-size:19px}
+      .side-legend{
+        position:static;
+        width:min(240px,100%);
+        margin:0 auto 10px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="page">
+
+    <aside class="side-legend" aria-label="دلالات الألوان">
+      <p class="side-legend-title">دلالات الألوان</p>
+      <div class="side-legend-list">
+        <div class="side-legend-item"><span class="dot info"></span><span>جاهزية / تشغيل / مسح جديد</span></div>
+        <div class="side-legend-item"><span class="dot success"></span><span>تم التحضير</span></div>
+        <div class="side-legend-item"><span class="dot warn"></span><span>تم التحضير مسبقًا</span></div>
+        <div class="side-legend-item"><span class="dot error"></span><span>خارج الوقت / مرفوض</span></div>
+      </div>
+    </aside>
+
     <main class="shell" id="shell">
       <div class="overlay" id="overlay">
         <div class="overlay-card">
           <div class="spinner"></div>
-          <div>جارٍ معالجة عملية التحضير...</div>
+          <div>جارٍ التحقق من الحضور...</div>
         </div>
       </div>
 
@@ -412,17 +453,6 @@
           <div id="statusPill" class="pill pill-blue">النظام جاهز</div>
           <h2 id="statusTitle" class="status-title">جاهز لقراءة الرمز</h2>
           <p id="statusText" class="status-text">قم بتشغيل الكاميرا ثم وجّه رمز QR نحو العدسة، وسيتم قفل القراءة مباشرة عند أول التقاط صحيح.</p>
-
-          <div class="legend">
-            <div class="legend-row">
-              <span class="chip info">أزرق: جاهزية / مسح جديد</span>
-              <span class="chip success">أخضر: تم التحضير</span>
-            </div>
-            <div class="legend-row">
-              <span class="chip warn">برتقالي: تم التحضير مسبقًا</span>
-              <span class="chip error">أحمر: خارج الوقت / مرفوض</span>
-            </div>
-          </div>
         </section>
 
         <section class="panel">
@@ -583,7 +613,7 @@
       try{
         await ensureScanner();
         const config = {
-          fps: 10,
+          fps: 12,
           aspectRatio: 1.333334,
           disableFlip: false,
           videoConstraints: {
@@ -611,11 +641,6 @@
         await html5QrCode.stop();
       }catch(err){
         console.warn("stop error", err);
-      }
-      try{
-        await html5QrCode.clear();
-      }catch(err){
-        console.warn("clear error", err);
       }
       cameraRunning = false;
       if(!silent){
@@ -670,6 +695,7 @@
       scanLocked = true;
       isProcessing = true;
       showOverlay(true);
+      setStatus("info", "جارٍ التحقق من الحضور", "تم التقاط الرمز بنجاح، جارٍ التحقق من البيانات الآن...", "جارٍ التحقق");
 
       await stopScannerInternal(true);
 
