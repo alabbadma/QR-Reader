@@ -41,9 +41,6 @@
       align-items:flex-start;
       justify-content:center;
       padding:20px 14px 26px;
-    }
-
-    .page{
       position:relative;
     }
 
@@ -213,7 +210,6 @@
       min-height:54px;
     }
 
-
     .info-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -263,9 +259,11 @@
     #reader video{
       border-radius:18px !important;
       object-fit:cover !important;
+      display:block !important;
+      width:100% !important;
+      height:100% !important;
     }
 
-    /* إزالة عناصر التحديد/الإطار الخاصة بالمسح */
     #reader__scan_region,
     #reader__dashboard_section_swaplink,
     #reader__filescan_input,
@@ -275,10 +273,6 @@
     #reader svg,
     #reader canvas{
       display:none !important;
-    }
-
-    #reader video{
-      display:block !important;
     }
 
     .controls{
@@ -418,7 +412,6 @@
 </head>
 <body>
   <div class="page">
-
     <aside class="side-legend" aria-label="دلالات الألوان">
       <p class="side-legend-title">دلالات الألوان</p>
       <div class="side-legend-list">
@@ -495,289 +488,369 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw3DthwxExzbCDjxOOKGLa9XxLym6fLuYY8S4S0VvX3GBSkm9ApTUR74gL3hJwtNVqWGg/exec";
-    const KIOSK_URL = "https://alabbadma.github.io/QR-Reader/";
-    const LOGO_FILE = "https://alabbadma.github.io/QR-Reader/moe-logo.png";
+    (function () {
+      "use strict";
 
-    let html5QrCode = null;
-    let cameraRunning = false;
-    let scanLocked = false;
-    let isProcessing = false;
-    let scriptCounter = 0;
+      const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw3DthwxExzbCDjxOOKGLa9XxLym6fLuYY8S4S0VvX3GBSkm9ApTUR74gL3hJwtNVqWGg/exec";
+      const KIOSK_URL = "https://alabbadma.github.io/QR-Reader/";
+      const LOGO_FILE = "https://alabbadma.github.io/QR-Reader/moe-logo.png";
 
-    const shellEl = document.getElementById("shell");
-    const overlayEl = document.getElementById("overlay");
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const statusPill = document.getElementById("statusPill");
-    const statusTitle = document.getElementById("statusTitle");
-    const statusText = document.getElementById("statusText");
-    document.getElementById("logoImg").src = LOGO_FILE;
+      let html5QrCode = null;
+      let cameraRunning = false;
+      let scanLocked = false;
+      let isProcessing = false;
+      let scriptCounter = 0;
+      let audioCtx = null;
+      let clockTimer = null;
 
-    const audioCtx = window.AudioContext ? new AudioContext() : (window.webkitAudioContext ? new webkitAudioContext() : null);
+      let shellEl = null;
+      let overlayEl = null;
+      let startBtn = null;
+      let stopBtn = null;
+      let resetBtn = null;
+      let statusPill = null;
+      let statusTitle = null;
+      let statusText = null;
+      let logoImg = null;
+      let clockEl = null;
+      let gregEl = null;
+      let dayEl = null;
+      let hijriEl = null;
 
-    function beepSequence(type){
-      if(!audioCtx) return;
-      const patterns = {
-        success: [[880,.12,.18],[1175,.14,.24]],
-        info: [[740,.09,.12],[880,.09,.18]],
-        warning: [[520,.12,.16],[520,.12,.20]],
-        error: [[320,.16,.2],[250,.22,.24]]
-      };
-      const seq = patterns[type] || patterns.info;
-      const now = audioCtx.currentTime;
-      seq.forEach((part, i) => {
-        const [freq, duration, gainValue] = part;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type === "error" ? "sawtooth" : "sine";
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now + i*0.17);
-        gain.gain.exponentialRampToValueAtTime(gainValue, now + i*0.17 + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + i*0.17 + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now + i*0.17);
-        osc.stop(now + i*0.17 + duration + 0.02);
-      });
-    }
-
-    function playSound(type){
-      if(audioCtx && audioCtx.state === "suspended"){
-        audioCtx.resume().catch(()=>{});
+      function getEl(id){
+        return document.getElementById(id);
       }
-      beepSequence(type);
-    }
 
-    function triggerFlash(kind){
-      shellEl.classList.remove("flash-success","flash-info","flash-warning","flash-error");
-      void shellEl.offsetWidth;
-      if(kind === "success") shellEl.classList.add("flash-success");
-      else if(kind === "warning") shellEl.classList.add("flash-warning");
-      else if(kind === "error") shellEl.classList.add("flash-error");
-      else shellEl.classList.add("flash-info");
-    }
+      function initRefs(){
+        shellEl = getEl("shell");
+        overlayEl = getEl("overlay");
+        startBtn = getEl("startBtn");
+        stopBtn = getEl("stopBtn");
+        resetBtn = getEl("resetBtn");
+        statusPill = getEl("statusPill");
+        statusTitle = getEl("statusTitle");
+        statusText = getEl("statusText");
+        logoImg = getEl("logoImg");
+        clockEl = getEl("clockNow");
+        gregEl = getEl("gregDate");
+        dayEl = getEl("dayName");
+        hijriEl = getEl("hijriDate");
+      }
 
-    function setStatus(kind, title, text, pillText){
-      statusPill.className = "pill";
-      if(kind === "success") statusPill.classList.add("pill-green");
-      else if(kind === "warning") statusPill.classList.add("pill-orange");
-      else if(kind === "error") statusPill.classList.add("pill-red");
-      else statusPill.classList.add("pill-blue");
-
-      statusPill.textContent = pillText || "النظام جاهز";
-      statusTitle.textContent = title || "";
-      statusText.textContent = text || "";
-
-      triggerFlash(kind);
-      playSound(kind === "success" ? "success" : kind === "warning" ? "warning" : kind === "error" ? "error" : "info");
-    }
-
-    function showOverlay(show){
-      overlayEl.classList.toggle("show", !!show);
-    }
-
-    function pad2(value){
-      return String(value).padStart(2, "0");
-    }
-
-    function formatGregorianDate(dateObj){
-      return `${dateObj.getFullYear()}-${pad2(dateObj.getMonth() + 1)}-${pad2(dateObj.getDate())}`;
-    }
-
-    function formatTime24(dateObj){
-      return `${pad2(dateObj.getHours())}:${pad2(dateObj.getMinutes())}:${pad2(dateObj.getSeconds())}`;
-    }
-
-    function getArabicDayName(dateObj){
-      const days = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-      return days[dateObj.getDay()] || "--";
-    }
-
-    function formatHijriDateSafe(dateObj){
-      try{
-        return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn", {
-          year: "numeric",
-          month: "long",
-          day: "numeric"
-        }).format(dateObj);
-      }catch(err1){
+      function initAudio(){
         try{
-          return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-nu-latn", {
+          const Ctx = window.AudioContext || window.webkitAudioContext || null;
+          if(Ctx){
+            audioCtx = new Ctx();
+          }
+        }catch(err){
+          console.warn("Audio init skipped:", err);
+          audioCtx = null;
+        }
+      }
+
+      function beepSequence(type){
+        if(!audioCtx) return;
+        const patterns = {
+          success: [[880,.12,.18],[1175,.14,.24]],
+          info: [[740,.09,.12],[880,.09,.18]],
+          warning: [[520,.12,.16],[520,.12,.20]],
+          error: [[320,.16,.2],[250,.22,.24]]
+        };
+        const seq = patterns[type] || patterns.info;
+        const now = audioCtx.currentTime;
+        seq.forEach((part, i) => {
+          const freq = part[0];
+          const duration = part[1];
+          const gainValue = part[2];
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type === "error" ? "sawtooth" : "sine";
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.0001, now + i * 0.17);
+          gain.gain.exponentialRampToValueAtTime(gainValue, now + i * 0.17 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.17 + duration);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + i * 0.17);
+          osc.stop(now + i * 0.17 + duration + 0.02);
+        });
+      }
+
+      function playSound(type){
+        try{
+          if(audioCtx && audioCtx.state === "suspended"){
+            audioCtx.resume().catch(function(){});
+          }
+          beepSequence(type);
+        }catch(err){
+          console.warn("playSound error:", err);
+        }
+      }
+
+      function triggerFlash(kind){
+        if(!shellEl) return;
+        shellEl.classList.remove("flash-success","flash-info","flash-warning","flash-error");
+        void shellEl.offsetWidth;
+        if(kind === "success") shellEl.classList.add("flash-success");
+        else if(kind === "warning") shellEl.classList.add("flash-warning");
+        else if(kind === "error") shellEl.classList.add("flash-error");
+        else shellEl.classList.add("flash-info");
+      }
+
+      function setStatus(kind, title, text, pillText){
+        if(!statusPill || !statusTitle || !statusText) return;
+
+        statusPill.className = "pill";
+        if(kind === "success") statusPill.classList.add("pill-green");
+        else if(kind === "warning") statusPill.classList.add("pill-orange");
+        else if(kind === "error") statusPill.classList.add("pill-red");
+        else statusPill.classList.add("pill-blue");
+
+        statusPill.textContent = pillText || "النظام جاهز";
+        statusTitle.textContent = title || "";
+        statusText.textContent = text || "";
+
+        triggerFlash(kind);
+        playSound(kind === "success" ? "success" : kind === "warning" ? "warning" : kind === "error" ? "error" : "info");
+      }
+
+      function showOverlay(show){
+        if(overlayEl){
+          overlayEl.classList.toggle("show", !!show);
+        }
+      }
+
+      function pad2(value){
+        return String(value).padStart(2, "0");
+      }
+
+      function formatGregorianDate(dateObj){
+        return dateObj.getFullYear() + "-" + pad2(dateObj.getMonth() + 1) + "-" + pad2(dateObj.getDate());
+      }
+
+      function formatTime24(dateObj){
+        return pad2(dateObj.getHours()) + ":" + pad2(dateObj.getMinutes()) + ":" + pad2(dateObj.getSeconds());
+      }
+
+      function getArabicDayName(dateObj){
+        const days = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+        return days[dateObj.getDay()] || "--";
+      }
+
+      function formatHijriDateSafe(dateObj){
+        try{
+          return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn", {
             year: "numeric",
             month: "long",
             day: "numeric"
           }).format(dateObj);
-        }catch(err2){
-          return "غير متاح";
-        }
-      }
-    }
-
-    function updateClock(){
-      const now = new Date();
-      const clockEl = document.getElementById("clockNow");
-      const gregEl = document.getElementById("gregDate");
-      const dayEl = document.getElementById("dayName");
-      const hijriEl = document.getElementById("hijriDate");
-
-      if(clockEl) clockEl.textContent = formatTime24(now);
-      if(gregEl) gregEl.textContent = formatGregorianDate(now);
-      if(dayEl) dayEl.textContent = getArabicDayName(now);
-      if(hijriEl) hijriEl.textContent = formatHijriDateSafe(now);
-    }
-
-    function sanitizeQr(text){
-      return String(text || "").trim();
-    }
-
-    async function ensureScanner(){
-      if(!html5QrCode){
-        html5QrCode = new Html5Qrcode("reader");
-      }
-      return html5QrCode;
-    }
-
-    async function startScanner(){
-      if(cameraRunning || isProcessing) return;
-      try{
-        await ensureScanner();
-        const config = {
-          fps: 12,
-          aspectRatio: 1.333334,
-          disableFlip: false,
-          videoConstraints: {
-            facingMode: "environment"
+        }catch(err1){
+          try{
+            return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-nu-latn", {
+              year: "numeric",
+              month: "long",
+              day: "numeric"
+            }).format(dateObj);
+          }catch(err2){
+            return "غير متاح";
           }
-        };
-
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          config,
-          onScanSuccess,
-          () => {}
-        );
-        cameraRunning = true;
-        setStatus("info", "تم تشغيل الكاميرا", "الكاميرا جاهزة الآن. يمكنك توجيه أي رمز QR نحو العدسة وسيتم التقاطه من كامل مساحة الكاميرا.", "الكاميرا جاهزة");
-      }catch(err){
-        console.error(err);
-        setStatus("error", "تعذر تشغيل الكاميرا", "تأكد من السماح بإذن الكاميرا لهذا الرابط، ثم حاول مرة أخرى.", "تعذر التشغيل");
-      }
-    }
-
-    async function stopScannerInternal(silent){
-      if(!html5QrCode || !cameraRunning) return;
-      try{
-        await html5QrCode.stop();
-      }catch(err){
-        console.warn("stop error", err);
-      }
-      cameraRunning = false;
-      if(!silent){
-        setStatus("info", "تم إيقاف الكاميرا", "يمكنك تشغيل الكاميرا مجددًا عند الحاجة.", "تم الإيقاف");
-      }
-    }
-
-    async function resetForNewScan(){
-      scanLocked = false;
-      isProcessing = false;
-      showOverlay(false);
-      setStatus("info", "جاهز لقراءة الرمز", "تمت إعادة التهيئة بنجاح. سيبدأ استقبال رمز جديد حال تشغيل الكاميرا أو عند إعادة تشغيلها تلقائيًا.", "مسح جديد");
-      await stopScannerInternal(true);
-      await startScanner();
-    }
-
-    function jsonpRequest(params){
-      return new Promise((resolve, reject) => {
-        const callbackName = "jsonp_callback_" + (++scriptCounter) + "_" + Date.now();
-        const query = new URLSearchParams({ ...params, callback: callbackName });
-        const script = document.createElement("script");
-        const timeout = setTimeout(() => {
-          cleanup();
-          reject(new Error("timeout"));
-        }, 20000);
-
-        function cleanup(){
-          clearTimeout(timeout);
-          if(script.parentNode) script.parentNode.removeChild(script);
-          try{ delete window[callbackName]; }catch(e){ window[callbackName] = undefined; }
         }
+      }
 
-        window[callbackName] = function(data){
-          cleanup();
-          resolve(data);
-        };
+      function updateClock(){
+        try{
+          const now = new Date();
+          if(clockEl) clockEl.textContent = formatTime24(now);
+          if(gregEl) gregEl.textContent = formatGregorianDate(now);
+          if(dayEl) dayEl.textContent = getArabicDayName(now);
+          if(hijriEl) hijriEl.textContent = formatHijriDateSafe(now);
+        }catch(err){
+          console.error("updateClock error:", err);
+        }
+      }
 
-        script.src = WEB_APP_URL + "?" + query.toString();
-        script.onerror = function(){
-          cleanup();
-          reject(new Error("network"));
-        };
-        document.body.appendChild(script);
-      });
-    }
+      function startClock(){
+        updateClock();
+        if(clockTimer){
+          clearInterval(clockTimer);
+        }
+        clockTimer = setInterval(updateClock, 1000);
+      }
 
-    async function onScanSuccess(decodedText){
-      if(scanLocked || isProcessing) return;
-      const qrValue = sanitizeQr(decodedText);
-      if(!qrValue) return;
+      function sanitizeQr(text){
+        return String(text || "").trim();
+      }
 
-      scanLocked = true;
-      isProcessing = true;
-      showOverlay(true);
-      setStatus("info", "جارٍ التحقق من الحضور", "تم التقاط الرمز بنجاح، جارٍ التحقق من البيانات الآن...", "جارٍ التحقق");
+      async function ensureScanner(){
+        if(!window.Html5Qrcode){
+          throw new Error("Html5Qrcode library not loaded");
+        }
+        if(!html5QrCode){
+          html5QrCode = new window.Html5Qrcode("reader");
+        }
+        return html5QrCode;
+      }
 
-      await stopScannerInternal(true);
+      async function startScanner(){
+        if(cameraRunning || isProcessing) return;
+        try{
+          await ensureScanner();
+          const config = {
+            fps: 12,
+            aspectRatio: 1.333334,
+            disableFlip: false,
+            videoConstraints: {
+              facingMode: "environment"
+            }
+          };
 
-      try{
-        const res = await jsonpRequest({ action:"scan", qr: qrValue, kiosk: KIOSK_URL });
-        handleScanResponse(res);
-      }catch(err){
-        console.error(err);
-        setStatus("error", "فشل الاتصال بالخدمة", "تعذر إكمال العملية حاليًا. اضغط على «مسح جديد» للمحاولة مرة أخرى.", "فشل الاتصال");
-      }finally{
+          await html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            onScanSuccess,
+            function(){ }
+          );
+          cameraRunning = true;
+          setStatus("info", "تم تشغيل الكاميرا", "الكاميرا جاهزة الآن. يمكنك توجيه أي رمز QR نحو العدسة وسيتم التقاطه من كامل مساحة الكاميرا.", "الكاميرا جاهزة");
+        }catch(err){
+          console.error(err);
+          setStatus("error", "تعذر تشغيل الكاميرا", "تأكد من السماح بإذن الكاميرا لهذا الرابط، ثم حاول مرة أخرى.", "تعذر التشغيل");
+        }
+      }
+
+      async function stopScannerInternal(silent){
+        if(!html5QrCode || !cameraRunning) return;
+        try{
+          await html5QrCode.stop();
+        }catch(err){
+          console.warn("stop error", err);
+        }
+        cameraRunning = false;
+        if(!silent){
+          setStatus("info", "تم إيقاف الكاميرا", "يمكنك تشغيل الكاميرا مجددًا عند الحاجة.", "تم الإيقاف");
+        }
+      }
+
+      async function resetForNewScan(){
+        scanLocked = false;
         isProcessing = false;
         showOverlay(false);
+        setStatus("info", "جاهز لقراءة الرمز", "تمت إعادة التهيئة بنجاح. سيبدأ استقبال رمز جديد حال تشغيل الكاميرا أو عند إعادة تشغيلها تلقائيًا.", "مسح جديد");
+        await stopScannerInternal(true);
+        await startScanner();
       }
-    }
 
-    function handleScanResponse(res){
-      const name = res && res.fullName ? ` للاسم: ${res.fullName}` : "";
-      const timeText = res && res.attendanceTime ? ` عند الساعة ${res.attendanceTime}` : "";
-      const firstTimeText = res && res.firstAttendanceTime ? `، ووقت الحضور الأول ${res.firstAttendanceTime}` : "";
+      function jsonpRequest(params){
+        return new Promise(function(resolve, reject){
+          const callbackName = "jsonp_callback_" + (++scriptCounter) + "_" + Date.now();
+          const query = new URLSearchParams(Object.assign({}, params, { callback: callbackName }));
+          const script = document.createElement("script");
+          const timeout = setTimeout(function(){
+            cleanup();
+            reject(new Error("timeout"));
+          }, 20000);
 
-      switch((res && res.state) || ""){
-        case "checked_in":
-          setStatus("success", "تم التحضير بنجاح", `تم تسجيل الحضور بنجاح${name}${timeText}.`, "تم التحضير");
-          break;
-        case "already_checked_in":
-          setStatus("warning", "تم التحضير مسبقًا", `هذا المشارك مسجل حضوره مسبقًا${name}${firstTimeText}.`, "تحضير مسبق");
-          break;
-        case "before_allowed_time":
-          setStatus("error", "خارج الوقت المحدد", `لا يمكن تسجيل الحضور الآن${name}. المحاولة كانت قبل وقت بداية التحضير المسموح.`, "خارج الوقت");
-          break;
-        case "after_allowed_time":
-          setStatus("error", "انتهى وقت التحضير", `لا يمكن تسجيل الحضور الآن${name}. انتهت نافذة التحضير المحددة لهذا اليوم.`, "انتهى الوقت");
-          break;
-        case "not_found":
-          setStatus("error", "الرمز غير معروف", "تعذر العثور على هذا المشارك في قاعدة البيانات. تأكد من صحة البطاقة أو البيانات.", "غير موجود");
-          break;
-        default:
-          setStatus("error", "تعذر إكمال العملية", (res && res.message) || "حدث خطأ غير متوقع أثناء معالجة الطلب.", "تعذر التنفيذ");
-          break;
+          function cleanup(){
+            clearTimeout(timeout);
+            if(script.parentNode) script.parentNode.removeChild(script);
+            try{
+              delete window[callbackName];
+            }catch(e){
+              window[callbackName] = undefined;
+            }
+          }
+
+          window[callbackName] = function(data){
+            cleanup();
+            resolve(data);
+          };
+
+          script.src = WEB_APP_URL + "?" + query.toString();
+          script.onerror = function(){
+            cleanup();
+            reject(new Error("network"));
+          };
+          document.body.appendChild(script);
+        });
       }
-    }
 
-    startBtn.addEventListener("click", startScanner);
-    stopBtn.addEventListener("click", () => stopScannerInternal(false));
-    resetBtn.addEventListener("click", resetForNewScan);
+      async function onScanSuccess(decodedText){
+        if(scanLocked || isProcessing) return;
+        const qrValue = sanitizeQr(decodedText);
+        if(!qrValue) return;
 
-    window.addEventListener("DOMContentLoaded", () => {
-      updateClock();
-      setInterval(updateClock, 1000);
-      setStatus("info", "جاهز لقراءة الرمز", "اضغط على «تشغيل الكاميرا» لبدء التحضير، وبعد كل عملية استخدم «مسح جديد» لإعادة التشغيل تلقائيًا.", "النظام جاهز");
-    });
+        scanLocked = true;
+        isProcessing = true;
+        showOverlay(true);
+        setStatus("info", "جارٍ التحقق من الحضور", "تم التقاط الرمز بنجاح، جارٍ التحقق من البيانات الآن...", "جارٍ التحقق");
+
+        await stopScannerInternal(true);
+
+        try{
+          const res = await jsonpRequest({ action:"scan", qr: qrValue, kiosk: KIOSK_URL });
+          handleScanResponse(res);
+        }catch(err){
+          console.error(err);
+          setStatus("error", "فشل الاتصال بالخدمة", "تعذر إكمال العملية حاليًا. اضغط على «مسح جديد» للمحاولة مرة أخرى.", "فشل الاتصال");
+        }finally{
+          isProcessing = false;
+          showOverlay(false);
+        }
+      }
+
+      function handleScanResponse(res){
+        const name = res && res.fullName ? " للاسم: " + res.fullName : "";
+        const timeText = res && res.attendanceTime ? " عند الساعة " + res.attendanceTime : "";
+        const firstTimeText = res && res.firstAttendanceTime ? "، ووقت الحضور الأول " + res.firstAttendanceTime : "";
+
+        switch((res && res.state) || ""){
+          case "checked_in":
+            setStatus("success", "تم التحضير بنجاح", "تم تسجيل الحضور بنجاح" + name + timeText + ".", "تم التحضير");
+            break;
+          case "already_checked_in":
+            setStatus("warning", "تم التحضير مسبقًا", "هذا المشارك مسجل حضوره مسبقًا" + name + firstTimeText + ".", "تحضير مسبق");
+            break;
+          case "before_allowed_time":
+            setStatus("error", "خارج الوقت المحدد", "لا يمكن تسجيل الحضور الآن" + name + ". المحاولة كانت قبل وقت بداية التحضير المسموح.", "خارج الوقت");
+            break;
+          case "after_allowed_time":
+            setStatus("error", "انتهى وقت التحضير", "لا يمكن تسجيل الحضور الآن" + name + ". انتهت نافذة التحضير المحددة لهذا اليوم.", "انتهى الوقت");
+            break;
+          case "not_found":
+            setStatus("error", "الرمز غير معروف", "تعذر العثور على هذا المشارك في قاعدة البيانات. تأكد من صحة البطاقة أو البيانات.", "غير موجود");
+            break;
+          default:
+            setStatus("error", "تعذر إكمال العملية", (res && res.message) || "حدث خطأ غير متوقع أثناء معالجة الطلب.", "تعذر التنفيذ");
+            break;
+        }
+      }
+
+      function bindEvents(){
+        if(startBtn) startBtn.addEventListener("click", startScanner);
+        if(stopBtn) stopBtn.addEventListener("click", function(){ stopScannerInternal(false); });
+        if(resetBtn) resetBtn.addEventListener("click", resetForNewScan);
+      }
+
+      function boot(){
+        initRefs();
+        initAudio();
+
+        if(logoImg){
+          logoImg.src = LOGO_FILE;
+        }
+
+        bindEvents();
+        startClock();
+        setStatus("info", "جاهز لقراءة الرمز", "اضغط على «تشغيل الكاميرا» لبدء التحضير، وبعد كل عملية استخدم «مسح جديد» لإعادة التشغيل تلقائيًا.", "النظام جاهز");
+      }
+
+      if(document.readyState === "loading"){
+        document.addEventListener("DOMContentLoaded", boot);
+      }else{
+        boot();
+      }
+    })();
   </script>
 </body>
 </html>
