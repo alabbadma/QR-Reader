@@ -44,20 +44,23 @@
       position:relative;
     }
 
-    .side-legend{
-      position:fixed;
-      top:20px;
-      right:18px;
-      width:170px;
-      background:rgba(255,255,255,.94);
-      border:1px solid #dbe8df;
-      border-radius:16px;
-      box-shadow:0 10px 24px rgba(16,69,43,.08);
-      padding:8px 9px;
-      z-index:30;
+
+    .legend-wrap{
+      display:flex;
+      justify-content:flex-end;
+      margin-bottom:12px;
     }
 
-    .side-legend-title{
+    .legend-panel{
+      width:min(255px,100%);
+      background:rgba(255,255,255,.96);
+      border:1px solid #dbe8df;
+      border-radius:16px;
+      box-shadow:0 8px 18px rgba(16,69,43,.06);
+      padding:9px 10px;
+    }
+
+    .legend-title{
       font-size:10px;
       font-weight:700;
       color:#5d7468;
@@ -66,12 +69,13 @@
       line-height:1.4;
     }
 
-    .side-legend-list{
+    .legend-list{
       display:grid;
       gap:6px;
+      grid-template-columns:1fr 1fr;
     }
 
-    .side-legend-item{
+    .legend-item{
       display:flex;
       align-items:center;
       gap:7px;
@@ -80,18 +84,6 @@
       line-height:1.4;
       white-space:nowrap;
     }
-
-    .dot{
-      width:9px;
-      height:9px;
-      border-radius:50%;
-      flex:0 0 9px;
-      box-shadow:0 0 0 2px rgba(255,255,255,.7), 0 0 10px rgba(0,0,0,.06);
-    }
-    .dot.info{background:#2577d8}
-    .dot.success{background:#11a25f}
-    .dot.warn{background:#ef9b19}
-    .dot.error{background:#d84343}
 
     .shell{
       width:min(820px,100%);
@@ -275,6 +267,50 @@
       display:none !important;
     }
 
+
+    .camera-tools{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:10px;
+      margin-bottom:8px;
+      flex-wrap:wrap;
+    }
+
+    .camera-mode-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#f5faf6;
+      border:1px solid #d8e5dc;
+      color:#355545;
+      font-size:11px;
+      font-weight:700;
+      line-height:1;
+    }
+
+    .camera-switch-btn{
+      appearance:none;
+      border:1px solid #d7e3da;
+      border-radius:12px;
+      min-height:38px;
+      padding:8px 12px;
+      font-family:inherit;
+      font-size:12px;
+      font-weight:700;
+      cursor:pointer;
+      background:#ffffff;
+      color:#24523c;
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      box-shadow:0 4px 12px rgba(16,69,43,.05);
+    }
+
+    .camera-switch-btn:hover{transform:translateY(-1px)}
+    .camera-switch-btn:active{transform:translateY(0)}
+
     .controls{
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
@@ -400,28 +436,18 @@
       .logo-wrap img{width:min(180px,65%)}
       .info-grid{grid-template-columns:1fr 1fr}
       .reader-box, #reader{min-height:260px}
-      .controls{grid-template-columns:1fr}
+      .camera-tools{flex-direction:column;align-items:stretch}
+      .camera-mode-badge{justify-content:center}
+      .controls{grid-template-columns:1fr 1fr}
       .title{font-size:19px}
-      .side-legend{
-        position:static;
-        width:min(240px,100%);
-        margin:0 auto 10px;
-      }
+      .legend-wrap{justify-content:stretch}
+      .legend-panel{width:100%}
+      .legend-list{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <aside class="side-legend" aria-label="دلالات الألوان">
-      <p class="side-legend-title">دلالات الألوان</p>
-      <div class="side-legend-list">
-        <div class="side-legend-item"><span class="dot info"></span><span>جاهزية / تشغيل / مسح جديد</span></div>
-        <div class="side-legend-item"><span class="dot success"></span><span>تم التحضير</span></div>
-        <div class="side-legend-item"><span class="dot warn"></span><span>تم التحضير مسبقًا</span></div>
-        <div class="side-legend-item"><span class="dot error"></span><span>خارج الوقت / مرفوض</span></div>
-      </div>
-    </aside>
-
     <main class="shell" id="shell">
       <div class="overlay" id="overlay">
         <div class="overlay-card">
@@ -439,6 +465,18 @@
       <div class="title-wrap">
         <h1 class="title">حضور المؤتمر التجريبي</h1>
         <div class="subtitle">نظام كشك التحضير عبر QR</div>
+      </div>
+
+      <div class="legend-wrap">
+        <section class="legend-panel" aria-label="دلالات الألوان">
+          <p class="legend-title">دلالات الألوان</p>
+          <div class="legend-list">
+            <div class="legend-item"><span class="dot info"></span><span>جاهزية / تشغيل / مسح جديد</span></div>
+            <div class="legend-item"><span class="dot success"></span><span>تم التحضير</span></div>
+            <div class="legend-item"><span class="dot warn"></span><span>تم التحضير مسبقًا</span></div>
+            <div class="legend-item"><span class="dot error"></span><span>خارج الوقت / مرفوض</span></div>
+          </div>
+        </section>
       </div>
 
       <section class="grid">
@@ -470,6 +508,11 @@
 
           <div class="reader-box">
             <div id="reader"></div>
+          </div>
+
+          <div class="camera-tools">
+            <div id="cameraModeBadge" class="camera-mode-badge">الكاميرا الحالية: <span id="cameraModeText">الخلفية</span></div>
+            <button id="switchCameraBtn" class="camera-switch-btn" type="button">تبديل الكاميرا</button>
           </div>
 
           <div class="controls">
@@ -508,6 +551,9 @@
       let startBtn = null;
       let stopBtn = null;
       let resetBtn = null;
+      let switchCameraBtn = null;
+      let cameraModeText = null;
+      let currentFacingMode = null;
       let statusPill = null;
       let statusTitle = null;
       let statusText = null;
@@ -527,6 +573,8 @@
         startBtn = getEl("startBtn");
         stopBtn = getEl("stopBtn");
         resetBtn = getEl("resetBtn");
+        switchCameraBtn = getEl("switchCameraBtn");
+        cameraModeText = getEl("cameraModeText");
         statusPill = getEl("statusPill");
         statusTitle = getEl("statusTitle");
         statusText = getEl("statusText");
@@ -535,6 +583,21 @@
         gregEl = getEl("gregDate");
         dayEl = getEl("dayName");
         hijriEl = getEl("hijriDate");
+      }
+
+
+      function isMobileLayout(){
+        return window.matchMedia("(max-width: 760px)").matches;
+      }
+
+      function detectInitialFacingMode(){
+        return isMobileLayout() ? "user" : "environment";
+      }
+
+      function updateCameraModeBadge(){
+        if(cameraModeText){
+          cameraModeText.textContent = currentFacingMode === "user" ? "الأمامية" : "الخلفية";
+        }
       }
 
       function initAudio(){
@@ -696,26 +759,30 @@
         if(cameraRunning || isProcessing) return;
         try{
           await ensureScanner();
+          const preferredFacing = currentFacingMode || detectInitialFacingMode();
           const config = {
             fps: 12,
             aspectRatio: 1.333334,
             disableFlip: false,
             videoConstraints: {
-              facingMode: "environment"
+              facingMode: preferredFacing
             }
           };
 
           await html5QrCode.start(
-            { facingMode: "environment" },
+            { facingMode: preferredFacing },
             config,
             onScanSuccess,
             function(){ }
           );
+          currentFacingMode = preferredFacing;
+          updateCameraModeBadge();
           cameraRunning = true;
-          setStatus("info", "تم تشغيل الكاميرا", "الكاميرا جاهزة الآن. يمكنك توجيه أي رمز QR نحو العدسة وسيتم التقاطه من كامل مساحة الكاميرا.", "الكاميرا جاهزة");
+          const modeText = currentFacingMode === "user" ? "الأمامية" : "الخلفية";
+          setStatus("info", "تم تشغيل الكاميرا", "الكاميرا " + modeText + " جاهزة الآن. يمكنك توجيه أي رمز QR نحو العدسة وسيتم التقاطه من كامل مساحة الكاميرا.", "الكاميرا جاهزة");
         }catch(err){
           console.error(err);
-          setStatus("error", "تعذر تشغيل الكاميرا", "تأكد من السماح بإذن الكاميرا لهذا الرابط، ثم حاول مرة أخرى.", "تعذر التشغيل");
+          setStatus("error", "تعذر تشغيل الكاميرا", "تأكد من السماح بإذن الكاميرا لهذا الرابط، أو بدّل بين الكاميرا الأمامية والخلفية ثم حاول مرة أخرى.", "تعذر التشغيل");
         }
       }
 
@@ -826,10 +893,26 @@
         }
       }
 
+
+      async function switchCameraMode(){
+        if(isProcessing) return;
+        currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+        updateCameraModeBadge();
+
+        if(cameraRunning){
+          await stopScannerInternal(true);
+          await startScanner();
+        }else{
+          const modeText = currentFacingMode === "user" ? "الأمامية" : "الخلفية";
+          setStatus("info", "تم تغيير وضع الكاميرا", "تم اختيار الكاميرا " + modeText + ". اضغط على «تشغيل الكاميرا» أو استخدم «مسح جديد» لبدء المسح.", "تبديل الكاميرا");
+        }
+      }
+
       function bindEvents(){
         if(startBtn) startBtn.addEventListener("click", startScanner);
         if(stopBtn) stopBtn.addEventListener("click", function(){ stopScannerInternal(false); });
         if(resetBtn) resetBtn.addEventListener("click", resetForNewScan);
+        if(switchCameraBtn) switchCameraBtn.addEventListener("click", switchCameraMode);
       }
 
       function boot(){
@@ -840,9 +923,11 @@
           logoImg.src = LOGO_FILE;
         }
 
+        currentFacingMode = detectInitialFacingMode();
+        updateCameraModeBadge();
         bindEvents();
         startClock();
-        setStatus("info", "جاهز لقراءة الرمز", "اضغط على «تشغيل الكاميرا» لبدء التحضير، وبعد كل عملية استخدم «مسح جديد» لإعادة التشغيل تلقائيًا.", "النظام جاهز");
+        setStatus("info", "جاهز لقراءة الرمز", "اضغط على «تشغيل الكاميرا» لبدء التحضير، ويمكنك أيضًا التبديل بين الكاميرا الأمامية والخلفية بحسب الجهاز أو أسلوب التنظيم.", "النظام جاهز");
       }
 
       if(document.readyState === "loading"){
