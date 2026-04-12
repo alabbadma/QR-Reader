@@ -256,6 +256,100 @@
       height:100% !important;
     }
 
+    .reader-stage{
+      width:100%;
+      min-height:290px;
+    }
+
+    .reader-stage.hidden{
+      display:none !important;
+    }
+
+    .reader-stage-camera{
+      background:#eaf1eb;
+    }
+
+    .result-stage{
+      min-height:290px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:18px 16px;
+      background:linear-gradient(180deg,#f8fcf9 0%, #eef6f0 100%);
+    }
+
+    .result-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:28px;
+      padding:5px 12px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:700;
+      margin-bottom:10px;
+      line-height:1;
+    }
+
+    .result-info{background:#e8f1ff;color:#246cce}
+    .result-success{background:#e7f8ee;color:#0b7a4b}
+    .result-warning{background:#fff3df;color:#bb7310}
+    .result-error{background:#ffe8e8;color:#c13838}
+
+    .result-title{
+      font-size:22px;
+      line-height:1.5;
+      font-weight:800;
+      color:#0c6d45;
+      margin-bottom:8px;
+    }
+
+    .result-meta{
+      font-size:13px;
+      line-height:1.9;
+      color:#315241;
+      margin-bottom:8px;
+    }
+
+    .result-details{
+      display:grid;
+      gap:7px;
+      width:100%;
+      max-width:360px;
+      margin-top:6px;
+    }
+
+    .result-detail{
+      border:1px solid #d7e6dc;
+      background:#ffffff;
+      border-radius:14px;
+      padding:8px 10px;
+      text-align:right;
+      font-size:12px;
+      line-height:1.8;
+      color:#264c39;
+    }
+
+    .result-detail strong{
+      color:#0b6f45;
+      font-weight:700;
+      margin-left:4px;
+    }
+
+    .emoji-legend{
+      grid-template-columns:1fr 1fr;
+      gap:6px 10px;
+    }
+
+    .emoji-legend .legend-item{
+      display:block;
+      white-space:normal;
+      font-size:10px;
+      line-height:1.7;
+    }
+
     #reader__scan_region,
     #reader__dashboard_section_swaplink,
     #reader__filescan_input,
@@ -443,6 +537,11 @@
       .legend-wrap{justify-content:stretch}
       .legend-panel{width:100%}
       .legend-list{grid-template-columns:1fr}
+      .scan-panel{order:1}
+      .status-card{order:2}
+      .result-stage, .reader-stage{min-height:260px}
+      .result-title{font-size:20px}
+      .emoji-legend{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -467,14 +566,17 @@
         <div class="subtitle">نظام كشك التحضير عبر QR</div>
       </div>
 
-     <div class="legend-box">
-  <div class="legend-title">دلالات الألوان</div>
-
-  <div class="legend-item">🟦 جاهزية / تشغيل / مسح جديد</div>
-  <div class="legend-item">🟩 تم التحضير</div>
-  <div class="legend-item">🟧 تم التحضير مسبقًا</div>
-  <div class="legend-item">🟥 خارج الوقت / مرفوض</div>
-</div>
+      <div class="legend-wrap">
+        <section class="legend-panel" aria-label="دلالات الألوان">
+          <p class="legend-title">دلالات الألوان</p>
+          <div class="legend-list">
+            <div class="legend-item"><span class="dot info"></span><span>جاهزية / تشغيل / مسح جديد</span></div>
+            <div class="legend-item"><span class="dot success"></span><span>تم التحضير</span></div>
+            <div class="legend-item"><span class="dot warn"></span><span>تم التحضير مسبقًا</span></div>
+            <div class="legend-item"><span class="dot error"></span><span>خارج الوقت / مرفوض</span></div>
+          </div>
+        </section>
+      </div>
 
       <section class="grid">
         <section class="panel status-card">
@@ -483,7 +585,7 @@
           <p id="statusText" class="status-text">قم بتشغيل الكاميرا ثم وجّه رمز QR نحو العدسة، وسيتم قفل القراءة مباشرة عند أول التقاط صحيح.</p>
         </section>
 
-        <section class="panel">
+        <section class="panel scan-panel">
           <div class="info-grid">
             <div class="mini">
               <div class="mini-label">الوقت الآن</div>
@@ -503,8 +605,16 @@
             </div>
           </div>
 
-          <div class="reader-box">
-            <div id="reader"></div>
+          <div class="reader-box" id="readerBox">
+            <div id="readerStage" class="reader-stage reader-stage-camera">
+              <div id="reader"></div>
+            </div>
+            <div id="resultStage" class="reader-stage result-stage hidden" aria-live="polite">
+              <div id="resultBadge" class="result-badge result-info">جاهز</div>
+              <div id="resultTitle" class="result-title">جاهز لقراءة الرمز</div>
+              <div id="resultMeta" class="result-meta">قم بتشغيل الكاميرا ثم وجّه رمز QR نحو العدسة.</div>
+              <div id="resultDetails" class="result-details"></div>
+            </div>
           </div>
 
           <div class="camera-tools">
@@ -551,6 +661,12 @@
       let switchCameraBtn = null;
       let cameraModeText = null;
       let currentFacingMode = null;
+      let readerStage = null;
+      let resultStage = null;
+      let resultBadge = null;
+      let resultTitle = null;
+      let resultMeta = null;
+      let resultDetails = null;
       let statusPill = null;
       let statusTitle = null;
       let statusText = null;
@@ -572,6 +688,12 @@
         resetBtn = getEl("resetBtn");
         switchCameraBtn = getEl("switchCameraBtn");
         cameraModeText = getEl("cameraModeText");
+        readerStage = getEl("readerStage");
+        resultStage = getEl("resultStage");
+        resultBadge = getEl("resultBadge");
+        resultTitle = getEl("resultTitle");
+        resultMeta = getEl("resultMeta");
+        resultDetails = getEl("resultDetails");
         statusPill = getEl("statusPill");
         statusTitle = getEl("statusTitle");
         statusText = getEl("statusText");
@@ -656,6 +778,46 @@
         else if(kind === "warning") shellEl.classList.add("flash-warning");
         else if(kind === "error") shellEl.classList.add("flash-error");
         else shellEl.classList.add("flash-info");
+      }
+
+
+      function escapeHtml(value){
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function showReaderStage(){
+        if(readerStage) readerStage.classList.remove("hidden");
+        if(resultStage) resultStage.classList.add("hidden");
+      }
+
+      function renderResultDetails(items){
+        if(!resultDetails) return;
+        const html = (items || [])
+          .filter(item => item && item.value)
+          .map(item => '<div class="result-detail"><strong>' + escapeHtml(item.label) + ':</strong> ' + escapeHtml(item.value) + '</div>')
+          .join("");
+        resultDetails.innerHTML = html;
+      }
+
+      function showResultStage(kind, title, meta, items, badgeText){
+        if(readerStage) readerStage.classList.add("hidden");
+        if(resultStage) resultStage.classList.remove("hidden");
+        if(resultBadge){
+          resultBadge.className = "result-badge";
+          if(kind === "success") resultBadge.classList.add("result-success");
+          else if(kind === "warning") resultBadge.classList.add("result-warning");
+          else if(kind === "error") resultBadge.classList.add("result-error");
+          else resultBadge.classList.add("result-info");
+          resultBadge.textContent = badgeText || "الحالة";
+        }
+        if(resultTitle) resultTitle.textContent = title || "";
+        if(resultMeta) resultMeta.textContent = meta || "";
+        renderResultDetails(items || []);
       }
 
       function setStatus(kind, title, text, pillText){
@@ -800,6 +962,7 @@
         scanLocked = false;
         isProcessing = false;
         showOverlay(false);
+        showResultStage("info", "جارٍ تهيئة المسح الجديد", "سيتم تشغيل الكاميرا تلقائيًا خلال لحظات.", [], "مسح جديد");
         setStatus("info", "جاهز لقراءة الرمز", "تمت إعادة التهيئة بنجاح. سيبدأ استقبال رمز جديد حال تشغيل الكاميرا أو عند إعادة تشغيلها تلقائيًا.", "مسح جديد");
         await stopScannerInternal(true);
         await startScanner();
@@ -846,7 +1009,10 @@
 
         scanLocked = true;
         isProcessing = true;
-        showOverlay(true);
+        showOverlay(false);
+        showResultStage("info", "تم التقاط الرمز", "جارٍ التحقق من بيانات الزائر الآن...", [
+          { label: "رمز QR", value: qrValue }
+        ], "جارٍ التحقق");
         setStatus("info", "جارٍ التحقق من الحضور", "تم التقاط الرمز بنجاح، جارٍ التحقق من البيانات الآن...", "جارٍ التحقق");
 
         await stopScannerInternal(true);
@@ -856,6 +1022,7 @@
           handleScanResponse(res);
         }catch(err){
           console.error(err);
+          showResultStage("error", "فشل الاتصال بالخدمة", "تعذر إكمال العملية حاليًا. اضغط على «مسح جديد» للمحاولة مرة أخرى.", [], "فشل الاتصال");
           setStatus("error", "فشل الاتصال بالخدمة", "تعذر إكمال العملية حاليًا. اضغط على «مسح جديد» للمحاولة مرة أخرى.", "فشل الاتصال");
         }finally{
           isProcessing = false;
@@ -863,49 +1030,55 @@
         }
       }
 
+
       function handleScanResponse(res){
-        const name = res && res.fullName ? " للاسم: " + res.fullName : "";
-        const timeText = res && res.attendanceTime ? " عند الساعة " + res.attendanceTime : "";
-        const firstTimeText = res && res.firstAttendanceTime ? "، ووقت الحضور الأول " + res.firstAttendanceTime : "";
+        const fullName = res && res.fullName ? res.fullName : "";
+        const attendanceTime = res && res.attendanceTime ? res.attendanceTime : "";
+        const firstAttendanceTime = res && res.firstAttendanceTime ? res.firstAttendanceTime : "";
+        const attendeeId = res && res.attendeeId ? res.attendeeId : "";
+        const nationalId = res && res.nationalId ? res.nationalId : "";
+        const organization = res && res.organization ? res.organization : "";
+        const notes = res && res.notes ? res.notes : "";
+        const details = [];
+
+        if(fullName) details.push({ label: "الاسم", value: fullName });
+        if(attendeeId) details.push({ label: "رقم المشارك", value: attendeeId });
+        if(nationalId) details.push({ label: "رقم الهوية", value: nationalId });
+        if(organization) details.push({ label: "الجهة", value: organization });
+        if(attendanceTime) details.push({ label: "وقت الحضور", value: attendanceTime });
+        if(firstAttendanceTime) details.push({ label: "وقت الحضور الأول", value: firstAttendanceTime });
+        if(notes && !attendanceTime && !firstAttendanceTime) details.push({ label: "ملاحظة", value: notes });
 
         switch((res && res.state) || ""){
           case "checked_in":
-            setStatus("success", "تم التحضير بنجاح", "تم تسجيل الحضور بنجاح" + name + timeText + ".", "تم التحضير");
+            showResultStage("success", "تم التحضير بنجاح", "تم تسجيل الحضور بنجاح، ويمكنك الآن تمرير الزائر التالي أو الضغط على «مسح جديد».", details, "تم التحضير");
+            setStatus("success", "تم التحضير بنجاح", "تم تسجيل الحضور بنجاح" + (fullName ? " للاسم: " + fullName : "") + (attendanceTime ? " عند الساعة " + attendanceTime : "") + ".", "تم التحضير");
             break;
           case "already_checked_in":
-            setStatus("warning", "تم التحضير مسبقًا", "هذا المشارك مسجل حضوره مسبقًا" + name + firstTimeText + ".", "تحضير مسبق");
+            showResultStage("warning", "تم التحضير مسبقًا", "هذا الزائر سبق تسجيل حضوره لهذا اليوم.", details, "تحضير مسبق");
+            setStatus("warning", "تم التحضير مسبقًا", "هذا المشارك مسجل حضوره مسبقًا" + (fullName ? " للاسم: " + fullName : "") + (firstAttendanceTime ? "، ووقت الحضور الأول " + firstAttendanceTime : "") + ".", "تحضير مسبق");
             break;
           case "before_allowed_time":
-            setStatus("error", "خارج الوقت المحدد", "لا يمكن تسجيل الحضور الآن" + name + ". المحاولة كانت قبل وقت بداية التحضير المسموح.", "خارج الوقت");
+            showResultStage("error", "خارج الوقت المحدد", "المحاولة كانت قبل وقت بداية التحضير المسموح.", details, "خارج الوقت");
+            setStatus("error", "خارج الوقت المحدد", "لا يمكن تسجيل الحضور الآن" + (fullName ? " للاسم: " + fullName : "") + ". المحاولة كانت قبل وقت بداية التحضير المسموح.", "خارج الوقت");
             break;
           case "after_allowed_time":
-            setStatus("error", "انتهى وقت التحضير", "لا يمكن تسجيل الحضور الآن" + name + ". انتهت نافذة التحضير المحددة لهذا اليوم.", "انتهى الوقت");
+            showResultStage("error", "انتهى وقت التحضير", "انتهت نافذة التحضير المحددة لهذا اليوم.", details, "انتهى الوقت");
+            setStatus("error", "انتهى وقت التحضير", "لا يمكن تسجيل الحضور الآن" + (fullName ? " للاسم: " + fullName : "") + ". انتهت نافذة التحضير المحددة لهذا اليوم.", "انتهى الوقت");
             break;
           case "not_found":
+            showResultStage("error", "الرمز غير معروف", "تعذر العثور على هذا المشارك في قاعدة البيانات.", details.length ? details : [{ label: "رمز QR", value: nationalId || "غير معروف" }], "غير موجود");
             setStatus("error", "الرمز غير معروف", "تعذر العثور على هذا المشارك في قاعدة البيانات. تأكد من صحة البطاقة أو البيانات.", "غير موجود");
             break;
           default:
+            showResultStage("error", "تعذر إكمال العملية", (res && res.message) || "حدث خطأ غير متوقع أثناء معالجة الطلب.", details, "تعذر التنفيذ");
             setStatus("error", "تعذر إكمال العملية", (res && res.message) || "حدث خطأ غير متوقع أثناء معالجة الطلب.", "تعذر التنفيذ");
             break;
         }
       }
 
-
-      async function switchCameraMode(){
-        if(isProcessing) return;
-        currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
-        updateCameraModeBadge();
-
-        if(cameraRunning){
-          await stopScannerInternal(true);
-          await startScanner();
-        }else{
-          const modeText = currentFacingMode === "user" ? "الأمامية" : "الخلفية";
-          setStatus("info", "تم تغيير وضع الكاميرا", "تم اختيار الكاميرا " + modeText + ". اضغط على «تشغيل الكاميرا» أو استخدم «مسح جديد» لبدء المسح.", "تبديل الكاميرا");
-        }
-      }
-
       function bindEvents(){
+
         if(startBtn) startBtn.addEventListener("click", startScanner);
         if(stopBtn) stopBtn.addEventListener("click", function(){ stopScannerInternal(false); });
         if(resetBtn) resetBtn.addEventListener("click", resetForNewScan);
