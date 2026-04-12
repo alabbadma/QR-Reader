@@ -11,15 +11,12 @@
   <style>
     :root{
       --green:#0b7a4b;
-      --green2:#15935b;
       --blue:#2577d8;
       --orange:#ef9b19;
       --red:#d84343;
       --text:#174b34;
       --muted:#61756a;
       --line:#d7e6dc;
-      --bg:#eef4ef;
-      --card:#ffffff;
       --shadow:0 12px 34px rgba(18,72,43,.08);
     }
     *{box-sizing:border-box}
@@ -55,6 +52,7 @@
     .title-wrap{text-align:center;margin-bottom:12px}
     .title{margin:0;font-size:20px;line-height:1.4;color:#0b6f45;font-weight:700}
     .subtitle{margin-top:4px;font-size:11px;color:#5d7d6d;font-weight:600}
+
     .info-grid{
       display:grid;
       grid-template-columns:repeat(4,1fr);
@@ -71,6 +69,7 @@
     }
     .mini-label{font-size:10px;color:#6b7b72;margin-bottom:4px;font-weight:600}
     .mini-value{font-size:15px;font-weight:700;line-height:1.5;color:#0f5f3f;word-break:break-word}
+
     .reader-box{
       position:relative;
       border-radius:18px;
@@ -84,7 +83,10 @@
       min-height:290px;
       width:100%;
     }
-    #readerStage{display:block;background:#eaf1eb}
+    #readerStage{
+      display:block;
+      background:#eaf1eb;
+    }
     #resultStage{
       display:none;
       align-items:center;
@@ -92,7 +94,11 @@
       padding:18px;
       background:linear-gradient(180deg,#f9fcfa 0%,#eff6f1 100%);
     }
-    #reader{width:100%;min-height:290px;background:#eaf1eb}
+    #reader{
+      width:100%;
+      min-height:290px;
+      background:#eaf1eb;
+    }
     #reader video{
       border-radius:18px !important;
       object-fit:cover !important;
@@ -108,6 +114,7 @@
     #reader img[alt="Info icon"],
     #reader svg,
     #reader canvas{display:none !important}
+
     .result-card{
       width:100%;
       max-width:560px;
@@ -135,20 +142,37 @@
     .pill-red{background:#ffe8e8;color:#c13838}
     .result-title{margin:0 0 6px;font-size:18px;font-weight:700;color:#0b6f45;line-height:1.5}
     .result-text{font-size:13px;color:#315241;line-height:1.9;margin:0}
+
     .overlay{
-      position:absolute;inset:0;background:rgba(245,250,246,.72);
-      display:none;align-items:center;justify-content:center;z-index:8;backdrop-filter:blur(2px);
+      position:absolute;
+      inset:0;
+      background:rgba(245,250,246,.72);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:8;
+      backdrop-filter:blur(2px);
     }
     .overlay.show{display:flex}
     .overlay-card{
-      background:#fff;border:1px solid #dce8e0;border-radius:18px;padding:14px 16px;
-      display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(18,72,43,.08);
-      color:#24563f;font-size:13px;font-weight:700;
+      background:#fff;
+      border:1px solid #dce8e0;
+      border-radius:18px;
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      box-shadow:0 8px 24px rgba(18,72,43,.08);
+      color:#24563f;
+      font-size:13px;
+      font-weight:700;
     }
     .spinner{
       width:20px;height:20px;border-radius:50%;
-      border:3px solid #d9ebe0;border-top-color:#15935b;animation:spin .8s linear infinite;
+      border:3px solid #d9ebe0;border-top-color:#15935b;
+      animation:spin .8s linear infinite;
     }
+
     .controls{
       display:grid;
       grid-template-columns:1fr 1fr 1fr 1fr;
@@ -156,8 +180,15 @@
       margin-bottom:10px;
     }
     button{
-      appearance:none;border:none;border-radius:13px;padding:10px 12px;font-family:inherit;
-      font-size:13px;font-weight:700;cursor:pointer;transition:transform .12s ease,opacity .12s ease;
+      appearance:none;
+      border:none;
+      border-radius:13px;
+      padding:10px 12px;
+      font-family:inherit;
+      font-size:13px;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .12s ease,opacity .12s ease;
       min-height:42px;
     }
     button:hover{transform:translateY(-1px)}
@@ -166,21 +197,46 @@
     .btn-green{background:linear-gradient(180deg,#17a15f,#0e844f);color:#fff;box-shadow:0 6px 16px rgba(16,132,79,.18)}
     .btn-light{background:#f6f9f7;color:#315241;border:1px solid #d8e4dc}
     .btn-blue{background:linear-gradient(180deg,#2c86ef,#2577d8);color:#fff;box-shadow:0 6px 16px rgba(37,119,216,.16)}
+
     .legend-box{
-      border:1px solid #d7e6dc;border-radius:14px;padding:10px 12px;background:#fbfdfb;margin-bottom:10px;
+      border:1px solid #d7e6dc;
+      border-radius:14px;
+      padding:10px 12px;
+      background:#fbfdfb;
+      margin-bottom:10px;
     }
-    .legend-title{font-size:10px;font-weight:700;color:#5d7468;margin-bottom:8px;text-align:center}
+    .legend-title{
+      font-size:10px;
+      font-weight:700;
+      color:#5d7468;
+      margin-bottom:8px;
+      text-align:center;
+    }
     .legend-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:4px 10px;
     }
-    .legend-item{font-size:10px;color:#345444;line-height:1.8}
-    .footer{text-align:center;margin-top:12px;color:#51695d;font-size:11px;line-height:1.9;font-weight:400}
+    .legend-item{
+      font-size:10px;
+      color:#345444;
+      line-height:1.8;
+    }
+
+    .footer{
+      text-align:center;
+      margin-top:12px;
+      color:#51695d;
+      font-size:11px;
+      line-height:1.9;
+      font-weight:400;
+    }
+
     .flash-success{animation:flashSuccess .95s ease-out}
     .flash-info{animation:flashInfo .9s ease-out}
     .flash-warning{animation:flashWarning .95s ease-out}
     .flash-error{animation:flashError .95s ease-out}
+
     @keyframes spin{to{transform:rotate(360deg)}}
     @keyframes flashSuccess{
       0%{filter:brightness(1);box-shadow:var(--shadow)}
@@ -218,6 +274,7 @@
       76%{filter:brightness(1.11);box-shadow:0 0 0 2px rgba(255,255,255,.68),0 0 15px rgba(255,83,83,.20)}
       100%{filter:brightness(1);box-shadow:var(--shadow)}
     }
+
     @media (max-width:760px){
       .page{padding:10px}
       .shell{padding:14px 12px 12px;border-radius:22px}
@@ -396,12 +453,12 @@
         if(overlayEl) overlayEl.classList.toggle("show", !!show);
       }
       function showReader(){
-        readerStage.style.display = "block";
-        resultStage.style.display = "none";
+        if(readerStage) readerStage.style.display = "block";
+        if(resultStage) resultStage.style.display = "none";
       }
       function showResult(){
-        readerStage.style.display = "none";
-        resultStage.style.display = "flex";
+        if(readerStage) readerStage.style.display = "none";
+        if(resultStage) resultStage.style.display = "flex";
       }
 
       function triggerFlash(kind){
@@ -420,7 +477,7 @@
           success: [[880,.12,.18],[1175,.14,.24]],
           info: [[740,.09,.12],[880,.09,.18]],
           warning: [[520,.12,.16],[520,.12,.20]],
-          error: [[320,.16,.2],[250,.22,.24]]
+          error: [[320,.16,.20],[250,.22,.24]]
         };
         const seq = patterns[type] || patterns.info;
         const now = audioCtx.currentTime;
@@ -452,6 +509,7 @@
         else if(kind === "warning") resultPill.classList.add("pill-orange");
         else if(kind === "error") resultPill.classList.add("pill-red");
         else resultPill.classList.add("pill-blue");
+
         resultPill.textContent = pillText || "النظام جاهز";
         resultTitle.textContent = title || "";
         resultText.textContent = text || "";
@@ -535,15 +593,18 @@
             cleanup();
             reject(new Error("timeout"));
           }, 20000);
+
           function cleanup(){
             clearTimeout(timeout);
             if(script.parentNode) script.parentNode.removeChild(script);
             try{ delete window[callbackName]; }catch(e){ window[callbackName] = undefined; }
           }
+
           window[callbackName] = function(data){
             cleanup();
             resolve(data);
           };
+
           script.src = WEB_APP_URL + "?" + query.toString();
           script.onerror = function(){
             cleanup();
@@ -557,11 +618,13 @@
         if(scanLocked || isProcessing) return;
         const qrValue = sanitizeQr(decodedText);
         if(!qrValue) return;
+
         scanLocked = true;
         isProcessing = true;
         showResult();
         showOverlay(true);
         setResult("info","تم التقاط الرمز","جارٍ التحقق من بيانات الزائر الآن...","جارٍ التحقق");
+
         await stopScannerInternal(true);
 
         try{
@@ -580,6 +643,7 @@
         const name = res && res.fullName ? " للاسم: " + res.fullName : "";
         const timeText = res && res.attendanceTime ? " عند الساعة " + res.attendanceTime : "";
         const firstTimeText = res && res.firstAttendanceTime ? "، ووقت الحضور الأول " + res.firstAttendanceTime : "";
+
         switch((res && res.state) || ""){
           case "checked_in":
             setResult("success","تم التحضير بنجاح","تم تسجيل الحضور بنجاح" + name + timeText + ".","تم التحضير");
