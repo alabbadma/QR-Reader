@@ -6,21 +6,12 @@
   <title>حضور المؤتمر التجريبي</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/html5-qrcode" defer></script>
   <style>
     :root{
-      --bg:#edf4ef;
-      --card:#ffffff;
-      --green:#0e7a43;
-      --green-dark:#0b5b31;
-      --text:#173a2a;
-      --muted:#5d7b6b;
-      --line:#dbe8dc;
-      --soft:#f7fbf8;
-      --blue:#1f73d6;
-      --warn:#e38b1a;
-      --error:#d63c43;
+      --bg:#edf4ef; --card:#ffffff; --green:#0e7a43; --green-dark:#0b5b31; --text:#173a2a;
+      --muted:#5d7b6b; --line:#dbe8dc; --blue:#1f73d6; --warn:#e38b1a; --error:#d63c43;
     }
     *{box-sizing:border-box}
     body{
@@ -29,96 +20,56 @@
       linear-gradient(180deg,#f2f7f3,#ebf3ed);
       color:var(--text);min-height:100vh;display:flex;flex-direction:column;
     }
-    .page{
-      width:min(980px,94vw);
-      margin:28px auto 16px;
-    }
+    .page{width:min(760px,92vw);margin:22px auto 10px}
     .shell{
       position:relative;background:var(--card);border:1px solid var(--line);
-      border-radius:28px;padding:22px 20px 18px;
-      box-shadow:0 18px 50px rgba(11, 91, 49, .10);
-      overflow:hidden;
-      transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
-      isolation:isolate;
+      border-radius:24px;padding:18px 18px 14px;box-shadow:0 16px 42px rgba(11, 91, 49, .10);
+      overflow:hidden;transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;isolation:isolate;
     }
-    .brand{
-      display:flex;align-items:center;gap:16px;padding:4px 2px 12px;
-      border-bottom:1px solid #ebf1eb;margin-bottom:16px;
-    }
-    .brand img{width:96px;height:auto;object-fit:contain}
-    .brand-copy h1{margin:0;font-size:31px;line-height:1.25;color:var(--green-dark)}
-    .brand-copy p{margin:6px 0 0;color:var(--muted);font-weight:600}
-    .top-grid{
-      display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start;
-    }
-    .panel{
-      background:linear-gradient(180deg,#f9fcf9,#f2f8f3);
-      border:1px solid #e1ece2;border-radius:22px;padding:16px;
-    }
-    .clock-box{
-      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
-    }
-    .metric{
-      background:#fff;border:1px solid #e5eee6;border-radius:18px;padding:14px;
-      min-height:86px;
-    }
-    .metric strong{
-      display:block;color:var(--muted);font-size:13px;margin-bottom:6px
-    }
-    .metric .big{
-      font-size:28px;font-weight:800;color:var(--green-dark);line-height:1.2;
-      word-break:break-word;
-    }
-    #cameraPanel{
-      margin-top:18px;
-    }
+    .brand{padding:2px 6px 8px;text-align:center;margin-bottom:10px}
+    .brand img{width:88px;height:auto;object-fit:contain;display:block;margin:0 auto}
+    .brand h1{margin:54px 0 0;font-size:20px;line-height:1.8;color:var(--green-dark);font-weight:700}
+    .brand p{margin:6px 0 0;color:var(--muted);font-size:12px;font-weight:600}
+    .top-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}
+    .panel{background:#fbfdfb;border:1px solid #e6efe7;border-radius:18px;padding:12px}
+    .clock-box{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+    .metric{background:#fff;border:1px solid #e5ede6;border-radius:14px;padding:10px 10px 8px;text-align:center}
+    .metric strong{display:block;font-size:11px;color:#5a7766;margin-bottom:4px;font-weight:600}
+    .metric .big{font-size:15px;font-weight:700;color:#0d5b35;line-height:1.6}
     .camera-box{
-      background:#0d1117;border-radius:22px;overflow:hidden;border:1px solid #213226;
-      min-height:360px;position:relative;
+      background:#0d1710;border-radius:16px;min-height:280px;position:relative;overflow:hidden;
+      border:1px solid rgba(255,255,255,.08)
     }
-    #reader{
-      width:100%;min-height:360px;
-    }
+    #reader{width:100%}
+    #reader video{width:100%!important;height:280px!important;object-fit:cover;border-radius:16px}
+    #reader__scan_region, #reader__dashboard_section_csr, #reader__dashboard_section_swaplink{display:none!important}
+    #reader img{display:none!important}
     .camera-placeholder{
       position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-      color:#d6e6d8;font-weight:700;background:
-      linear-gradient(135deg,rgba(255,255,255,.02),rgba(255,255,255,.04)),
-      radial-gradient(circle at center, rgba(17,139,76,.14), transparent 42%);
-      text-align:center;padding:24px;
+      color:#d8eadf;font-size:13px;text-align:center;padding:18px;line-height:1.9
     }
-    .controls{
-      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px;
-    }
+    .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
     button{
-      height:52px;border:none;border-radius:16px;cursor:pointer;
-      font:800 15px 'Cairo',sans-serif;
-      transition:transform .12s ease, opacity .12s ease, box-shadow .12s ease;
+      border:none;border-radius:12px;height:40px;cursor:pointer;font:700 13px 'Cairo',sans-serif;
+      transition:transform .08s ease, opacity .2s ease;
     }
-    button:active{transform:scale(.985)}
-    .btn-start{background:var(--green);color:#fff;box-shadow:0 12px 25px rgba(14,122,67,.22)}
-    .btn-stop{background:#edf3ee;color:#173a2a}
-    .btn-reset{background:#1f73d6;color:#fff;box-shadow:0 12px 25px rgba(31,115,214,.2)}
+    button:active{transform:scale(.99)}
+    .btn-start{background:var(--green);color:#fff}
+    .btn-stop{background:#eef3ef;color:#173a2a}
+    .btn-reset{background:#eaf2ff;color:#1f5fb1}
     .msg-box{
-      margin-top:16px;padding:16px;border-radius:20px;background:#f6faf7;border:1px solid #e0ebe1;
-      min-height:145px;
+      min-height:100%;display:flex;flex-direction:column;justify-content:center;background:#fff;
+      border:1px solid #e6efe7;border-radius:18px;padding:16px 14px;
     }
     .msg-state{
-      display:inline-flex;align-items:center;justify-content:center;
-      min-height:40px;padding:0 14px;border-radius:999px;background:#eaf2ec;color:var(--green-dark);
-      font-weight:800;margin-bottom:12px;
+      display:inline-flex;align-items:center;justify-content:center;align-self:center;
+      min-height:28px;padding:0 12px;border-radius:999px;background:#eaf2ff;color:#1f5fb1;
+      font-size:11px;font-weight:700;margin-bottom:10px;
     }
-    .msg-title{
-      font-size:28px;font-weight:800;line-height:1.3;color:var(--green-dark);margin-bottom:8px;
-    }
-    .msg-meta{
-      color:#315140;font-weight:700;line-height:1.9
-    }
-    .legend{
-      display:flex;gap:10px;flex-wrap:wrap;margin-top:12px
-    }
-    .chip{
-      padding:8px 12px;border-radius:999px;font-weight:700;font-size:13px
-    }
+    .msg-title{font-size:20px;font-weight:700;line-height:1.7;color:var(--green-dark);margin-bottom:6px;text-align:center}
+    .msg-meta{color:#315140;font-weight:600;line-height:1.9;font-size:13px;text-align:center}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+    .chip{padding:6px 10px;border-radius:999px;font-weight:700;font-size:11px}
     .chip-blue{background:rgba(31,115,214,.12);color:#1f73d6}
     .chip-green{background:rgba(14,122,67,.12);color:#0e7a43}
     .chip-orange{background:rgba(227,139,26,.12);color:#a7640d}
@@ -129,70 +80,56 @@
     }
     .overlay.show{display:flex}
     .overlay-card{
-      background:#fff;border:1px solid #e1ebe2;border-radius:18px;padding:16px 18px;
-      box-shadow:0 16px 40px rgba(0,0,0,.12);font-weight:800;color:var(--green-dark)
+      background:#fff;border:1px solid #e1ebe2;border-radius:16px;padding:14px 16px;
+      box-shadow:0 16px 40px rgba(0,0,0,.12);font-weight:700;color:var(--green-dark);font-size:13px;
     }
     .overlay-card .spinner{
-      width:28px;height:28px;border-radius:50%;border:3px solid rgba(14,122,67,.2);
-      border-top-color:var(--green);margin:0 auto 10px;animation:spin .8s linear infinite;
+      width:24px;height:24px;border-radius:50%;border:3px solid rgba(14,122,67,.2);
+      border-top-color:var(--green);margin:0 auto 8px;animation:spin .8s linear infinite;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* فلاش على بطاقة الكشك كاملة */
     .flash-info{animation:flashInfo .92s ease-out}
     .flash-success{animation:flashSuccess .92s ease-out}
     .flash-warning{animation:flashWarning .92s ease-out}
     .flash-error{animation:flashError .92s ease-out}
-
     @keyframes flashInfo{
-      0%,100%{filter:brightness(1);box-shadow:0 18px 50px rgba(11,91,49,.10);background:#fff}
-      10%{filter:brightness(1.22);box-shadow:0 0 0 2px rgba(255,255,255,.92),0 0 28px rgba(31,115,214,.45),0 18px 50px rgba(31,115,214,.18);background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(221,237,255,.85))}
+      0%,100%{filter:brightness(1);box-shadow:0 16px 42px rgba(11,91,49,.10);background:#fff}
+      10%{filter:brightness(1.22);box-shadow:0 0 0 2px rgba(255,255,255,.92),0 0 28px rgba(31,115,214,.45),0 16px 42px rgba(31,115,214,.18);background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(221,237,255,.85))}
       27%{filter:brightness(1.02)}
-      42%{filter:brightness(1.16);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 24px rgba(31,115,214,.35),0 18px 50px rgba(31,115,214,.16)}
+      42%{filter:brightness(1.16);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 24px rgba(31,115,214,.35),0 16px 42px rgba(31,115,214,.16)}
       61%{filter:brightness(1.01)}
-      74%{filter:brightness(1.11);box-shadow:0 0 0 1px rgba(255,255,255,.72),0 0 16px rgba(31,115,214,.26),0 18px 50px rgba(31,115,214,.12)}
+      74%{filter:brightness(1.11);box-shadow:0 0 0 1px rgba(255,255,255,.72),0 0 16px rgba(31,115,214,.26),0 16px 42px rgba(31,115,214,.12)}
     }
     @keyframes flashSuccess{
-      0%,100%{filter:brightness(1);box-shadow:0 18px 50px rgba(11,91,49,.10);background:#fff}
-      10%{filter:brightness(1.24);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 30px rgba(42,255,136,.48),0 18px 50px rgba(14,122,67,.2);background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(220,255,235,.86))}
+      0%,100%{filter:brightness(1);box-shadow:0 16px 42px rgba(11,91,49,.10);background:#fff}
+      10%{filter:brightness(1.24);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 30px rgba(42,255,136,.48),0 16px 42px rgba(14,122,67,.2);background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(220,255,235,.86))}
       27%{filter:brightness(1.02)}
-      42%{filter:brightness(1.17);box-shadow:0 0 0 2px rgba(255,255,255,.84),0 0 24px rgba(42,255,136,.38),0 18px 50px rgba(14,122,67,.18)}
+      42%{filter:brightness(1.17);box-shadow:0 0 0 2px rgba(255,255,255,.84),0 0 24px rgba(42,255,136,.38),0 16px 42px rgba(14,122,67,.18)}
       61%{filter:brightness(1.01)}
-      74%{filter:brightness(1.10);box-shadow:0 0 0 1px rgba(255,255,255,.74),0 0 16px rgba(42,255,136,.28),0 18px 50px rgba(14,122,67,.14)}
+      74%{filter:brightness(1.10);box-shadow:0 0 0 1px rgba(255,255,255,.74),0 0 16px rgba(42,255,136,.28),0 16px 42px rgba(14,122,67,.14)}
     }
     @keyframes flashWarning{
-      0%,100%{filter:brightness(1);box-shadow:0 18px 50px rgba(11,91,49,.10);background:#fff}
-      10%{filter:brightness(1.22);box-shadow:0 0 0 2px rgba(255,255,255,.94),0 0 30px rgba(255,170,56,.46),0 18px 50px rgba(227,139,26,.18);background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,238,216,.86))}
+      0%,100%{filter:brightness(1);box-shadow:0 16px 42px rgba(11,91,49,.10);background:#fff}
+      10%{filter:brightness(1.22);box-shadow:0 0 0 2px rgba(255,255,255,.94),0 0 30px rgba(255,170,56,.46),0 16px 42px rgba(227,139,26,.18);background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,238,216,.86))}
       27%{filter:brightness(1.02)}
-      42%{filter:brightness(1.15);box-shadow:0 0 0 2px rgba(255,255,255,.84),0 0 24px rgba(255,170,56,.36),0 18px 50px rgba(227,139,26,.16)}
+      42%{filter:brightness(1.15);box-shadow:0 0 0 2px rgba(255,255,255,.84),0 0 24px rgba(255,170,56,.36),0 16px 42px rgba(227,139,26,.16)}
       61%{filter:brightness(1.01)}
-      74%{filter:brightness(1.09);box-shadow:0 0 0 1px rgba(255,255,255,.74),0 0 16px rgba(255,170,56,.26),0 18px 50px rgba(227,139,26,.12)}
+      74%{filter:brightness(1.09);box-shadow:0 0 0 1px rgba(255,255,255,.74),0 0 16px rgba(255,170,56,.26),0 16px 42px rgba(227,139,26,.12)}
     }
     @keyframes flashError{
-      0%,100%{filter:brightness(1);box-shadow:0 18px 50px rgba(11,91,49,.10);background:#fff}
-      10%{filter:brightness(1.22);box-shadow:0 0 0 2px rgba(255,255,255,.94),0 0 30px rgba(255,83,96,.44),0 18px 50px rgba(214,60,67,.18);background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,223,226,.86))}
+      0%,100%{filter:brightness(1);box-shadow:0 16px 42px rgba(11,91,49,.10);background:#fff}
+      10%{filter:brightness(1.22);box-shadow:0 0 0 2px rgba(255,255,255,.94),0 0 30px rgba(255,83,96,.44),0 16px 42px rgba(214,60,67,.18);background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,223,226,.86))}
       27%{filter:brightness(1.02)}
-      42%{filter:brightness(1.15);box-shadow:0 0 0 2px rgba(255,255,255,.84),0 0 24px rgba(255,83,96,.34),0 18px 50px rgba(214,60,67,.16)}
+      42%{filter:brightness(1.15);box-shadow:0 0 0 2px rgba(255,255,255,.84),0 0 24px rgba(255,83,96,.34),0 16px 42px rgba(214,60,67,.16)}
       61%{filter:brightness(1.01)}
-      74%{filter:brightness(1.09);box-shadow:0 0 0 1px rgba(255,255,255,.74),0 0 16px rgba(255,83,96,.24),0 18px 50px rgba(214,60,67,.12)}
+      74%{filter:brightness(1.09);box-shadow:0 0 0 1px rgba(255,255,255,.74),0 0 16px rgba(255,83,96,.24),0 16px 42px rgba(214,60,67,.12)}
     }
-
-    footer{
-      margin-top:auto;text-align:center;padding:12px 16px 18px;color:#416352;font-weight:700;line-height:1.9
-    }
-
-    @media (max-width:920px){
-      .top-grid{grid-template-columns:1fr}
-    }
-    @media (max-width:640px){
-      .page{width:min(96vw,96vw)}
-      .shell{padding:18px 14px 16px}
-      .brand{gap:12px}
-      .brand img{width:78px}
-      .brand-copy h1{font-size:24px}
-      .clock-box{grid-template-columns:1fr}
-      .controls{grid-template-columns:1fr}
-      .msg-title{font-size:23px}
+    footer{margin-top:auto;text-align:center;padding:10px 16px 16px;color:#416352;line-height:1.8;font-size:13px;font-weight:400}
+    @media (max-width:760px){ .top-grid{grid-template-columns:1fr} }
+    @media (max-width:540px){
+      .page{width:min(94vw,94vw)} .shell{padding:14px 12px 12px} .brand img{width:80px}
+      .brand h1{font-size:20px} .clock-box{grid-template-columns:1fr} .controls{grid-template-columns:1fr}
+      #reader video{height:240px!important} .camera-box{min-height:240px}
     }
   </style>
 </head>
@@ -200,47 +137,28 @@
   <main class="page">
     <section class="shell" id="shell">
       <div class="overlay" id="overlay">
-        <div class="overlay-card">
-          <div class="spinner"></div>
-          جارٍ المعالجة...
-        </div>
+        <div class="overlay-card"><div class="spinner"></div>جارٍ المعالجة...</div>
       </div>
 
       <div class="brand">
         <img id="logoImg" alt="شعار وزارة التعليم">
-        <div class="brand-copy">
-          <h1>حضور المؤتمر التجريبي</h1>
-          <p>نظام كشك التحضير عبر QR</p>
-        </div>
+        <h1>حضور المؤتمر التجريبي</h1>
+        <p>نظام كشك التحضير عبر QR</p>
       </div>
 
       <div class="top-grid">
         <div class="panel">
           <div class="clock-box">
-            <div class="metric">
-              <strong>الوقت الآن</strong>
-              <div class="big" id="timeNow">--:--:--</div>
-            </div>
-            <div class="metric">
-              <strong>اليوم</strong>
-              <div class="big" id="dayName">--</div>
-            </div>
-            <div class="metric">
-              <strong>التاريخ الميلادي</strong>
-              <div class="big" id="gregDate">--</div>
-            </div>
-            <div class="metric">
-              <strong>التاريخ الهجري</strong>
-              <div class="big" id="hijriDate">--</div>
-            </div>
+            <div class="metric"><strong>الوقت الآن</strong><div class="big" id="timeNow">--:--:--</div></div>
+            <div class="metric"><strong>اليوم</strong><div class="big" id="dayName">--</div></div>
+            <div class="metric"><strong>التاريخ الميلادي</strong><div class="big" id="gregDate">--</div></div>
+            <div class="metric"><strong>التاريخ الهجري</strong><div class="big" id="hijriDate">--</div></div>
           </div>
 
           <div id="cameraPanel">
             <div class="camera-box">
               <div id="reader"></div>
-              <div class="camera-placeholder" id="cameraPlaceholder">
-                اضغط على زر تشغيل الكاميرا لبدء القراءة
-              </div>
+              <div class="camera-placeholder" id="cameraPlaceholder">اضغط على زر تشغيل الكاميرا لبدء القراءة</div>
             </div>
             <div class="controls">
               <button class="btn-start" id="startBtn">تشغيل الكاميرا</button>
@@ -254,9 +172,7 @@
           <div class="msg-box">
             <div class="msg-state" id="msgState">جاهزية النظام</div>
             <div class="msg-title" id="msgTitle">بانتظار قراءة الرمز</div>
-            <div class="msg-meta" id="msgMeta">
-              رجاءً وجّه رمز QR إلى الكاميرا ثم انتظر نتيجة التحقق.
-            </div>
+            <div class="msg-meta" id="msgMeta">رجاءً وجّه رمز QR إلى الكاميرا ثم انتظر نتيجة التحقق.</div>
             <div class="legend">
               <span class="chip chip-blue">أزرق: جاهزية / مسح جديد</span>
               <span class="chip chip-green">أخضر: تم التحضير</span>
@@ -297,49 +213,44 @@
 
     logoImg.src = LOGO_FILE;
 
+    function toLatinDigits(value){
+      return String(value || '')
+        .replace(/[٠-٩]/g, function(d){ return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); })
+        .replace(/[۰-۹]/g, function(d){ return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); });
+    }
+
     function updateClock(){
       const now = new Date();
-      document.getElementById('timeNow').textContent = new Intl.DateTimeFormat('ar-SA', {
+      document.getElementById('timeNow').textContent = toLatinDigits(new Intl.DateTimeFormat('en-GB', {
         hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZone:'Asia/Riyadh'
-      }).format(now);
+      }).format(now));
 
       document.getElementById('dayName').textContent = new Intl.DateTimeFormat('ar-SA', {
         weekday:'long', timeZone:'Asia/Riyadh'
       }).format(now);
 
-      document.getElementById('gregDate').textContent = new Intl.DateTimeFormat('en-CA', {
+      document.getElementById('gregDate').textContent = toLatinDigits(new Intl.DateTimeFormat('en-CA', {
         year:'numeric', month:'2-digit', day:'2-digit', timeZone:'Asia/Riyadh'
-      }).format(now);
+      }).format(now));
 
-      document.getElementById('hijriDate').textContent = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
+      document.getElementById('hijriDate').textContent = toLatinDigits(new Intl.DateTimeFormat('ar-SA-u-ca-islamic-nu-latn', {
         year:'numeric', month:'long', day:'numeric', timeZone:'Asia/Riyadh'
-      }).format(now);
+      }).format(now));
     }
     updateClock();
     setInterval(updateClock, 1000);
 
-    function showOverlay(show){
-      overlayEl.classList.toggle('show', !!show);
-    }
-
-    function resetFlashClasses(){
-      shellEl.classList.remove('flash-info','flash-success','flash-warning','flash-error');
-    }
+    function showOverlay(show){ overlayEl.classList.toggle('show', !!show); }
+    function resetFlashClasses(){ shellEl.classList.remove('flash-info','flash-success','flash-warning','flash-error'); }
 
     function triggerShellFlash(kind){
       resetFlashClasses();
       void shellEl.offsetWidth;
       const map = {
-        camera_ready:'flash-info',
-        reset_ready:'flash-info',
-        neutral:'flash-info',
-        checked_in:'flash-success',
-        already_checked_in:'flash-warning',
-        before_allowed_time:'flash-error',
-        after_allowed_time:'flash-error',
-        not_found:'flash-error',
-        invalid_qr:'flash-error',
-        camera_error:'flash-error'
+        camera_ready:'flash-info', reset_ready:'flash-info', neutral:'flash-info',
+        checked_in:'flash-success', already_checked_in:'flash-warning',
+        before_allowed_time:'flash-error', after_allowed_time:'flash-error',
+        not_found:'flash-error', invalid_qr:'flash-error', camera_error:'flash-error'
       };
       shellEl.classList.add(map[kind] || 'flash-info');
     }
@@ -383,34 +294,21 @@
 
     function setMessage(kind, title, metaHtml){
       const stateMap = {
-        neutral:'جاهزية النظام',
-        camera_ready:'الكاميرا جاهزة',
-        reset_ready:'جاهز لمسح جديد',
-        checked_in:'تم التحضير',
-        already_checked_in:'حضور مسبق',
-        before_allowed_time:'خارج الوقت',
-        after_allowed_time:'انتهى الوقت',
-        not_found:'غير موجود',
-        invalid_qr:'رمز غير صالح',
-        camera_error:'خطأ في الكاميرا'
+        neutral:'جاهزية النظام', camera_ready:'الكاميرا جاهزة', reset_ready:'جاهز لمسح جديد',
+        checked_in:'تم التحضير', already_checked_in:'حضور مسبق', before_allowed_time:'خارج الوقت',
+        after_allowed_time:'انتهى الوقت', not_found:'غير موجود', invalid_qr:'رمز غير صالح', camera_error:'خطأ في الكاميرا'
       };
       const colorMap = {
-        neutral:'#1f73d6',
-        camera_ready:'#1f73d6',
-        reset_ready:'#1f73d6',
-        checked_in:'#0e7a43',
-        already_checked_in:'#b36e10',
-        before_allowed_time:'#b7262d',
-        after_allowed_time:'#b7262d',
-        not_found:'#b7262d',
-        invalid_qr:'#b7262d',
-        camera_error:'#b7262d'
+        neutral:'#1f73d6', camera_ready:'#1f73d6', reset_ready:'#1f73d6',
+        checked_in:'#0e7a43', already_checked_in:'#b36e10',
+        before_allowed_time:'#b7262d', after_allowed_time:'#b7262d',
+        not_found:'#b7262d', invalid_qr:'#b7262d', camera_error:'#b7262d'
       };
 
       msgStateEl.textContent = stateMap[kind] || 'حالة النظام';
       msgTitleEl.textContent = title || '';
       msgMetaEl.innerHTML = metaHtml || '';
-      msgStateEl.style.background = colorMap[kind] ? colorMap[kind] + '20' : '#eaf2ec';
+      msgStateEl.style.background = (colorMap[kind] || '#eaf2ec') + '20';
       msgStateEl.style.color = colorMap[kind] || '#173a2a';
 
       triggerShellFlash(kind);
@@ -425,14 +323,13 @@
         }
       }catch(err){}
       scannerStarted = false;
-      if(force){
-        placeholderEl.style.display = 'flex';
-      }
+      if(force) placeholderEl.style.display = 'flex';
+      const reader = document.getElementById('reader');
+      if(reader) reader.innerHTML = '';
     }
 
     async function startScanner(){
-      if(isProcessing) return;
-      if(scannerStarted) return;
+      if(isProcessing || scannerStarted) return;
 
       try{
         html5QrCode = new Html5Qrcode('reader');
@@ -440,7 +337,7 @@
 
         await html5QrCode.start(
           { facingMode: 'environment' },
-          { fps: 10, qrbox: { width: 260, height: 260 }, aspectRatio: 1.33 },
+          { fps: 10, aspectRatio: 1.3333333, disableFlip: false },
           onScanSuccess,
           () => {}
         );
@@ -462,9 +359,7 @@
       setMessage('neutral', 'تم إيقاف الكاميرا', 'يمكنك تشغيلها مرة أخرى عند الحاجة.');
     }
 
-    function sanitizeQrValue(text){
-      return String(text || '').replace(/\D/g,'').trim();
-    }
+    function sanitizeQrValue(text){ return toLatinDigits(text).replace(/\D/g,'').trim(); }
 
     async function onScanSuccess(decodedText){
       if(scanLocked || isProcessing) return;
@@ -474,29 +369,18 @@
       scanLocked = true;
       isProcessing = true;
       showOverlay(true);
-
       await stopScannerInternal(true);
 
       sendScanJsonp(qrValue)
-        .then((data)=>{
-          applyResponse(data);
-        })
-        .catch(()=>{
-          setMessage('camera_error', 'فشل الاتصال بالخدمة', 'تعذر الوصول إلى خدمة التحقق. حاول مرة أخرى عبر زر مسح جديد.');
-        })
-        .finally(()=>{
-          showOverlay(false);
-          isProcessing = false;
-        });
+        .then((data)=>{ applyResponse(data); })
+        .catch(()=>{ setMessage('camera_error', 'فشل الاتصال بالخدمة', 'تعذر الوصول إلى خدمة التحقق. حاول مرة أخرى عبر زر مسح جديد.'); })
+        .finally(()=>{ showOverlay(false); isProcessing = false; });
     }
 
     function sendScanJsonp(qrValue){
       return new Promise((resolve, reject)=>{
         const callbackName = '__scanCallback_' + Date.now() + '_' + Math.floor(Math.random()*100000);
-        const timeout = setTimeout(()=>{
-          cleanup();
-          reject(new Error('timeout'));
-        }, 15000);
+        const timeout = setTimeout(()=>{ cleanup(); reject(new Error('timeout')); }, 15000);
 
         function cleanup(){
           try{ delete window[callbackName]; }catch(e){}
@@ -505,17 +389,11 @@
           clearTimeout(timeout);
         }
 
-        window[callbackName] = function(data){
-          cleanup();
-          resolve(data);
-        };
+        window[callbackName] = function(data){ cleanup(); resolve(data); };
 
         const script = document.createElement('script');
         script.id = callbackName;
-        script.onerror = function(){
-          cleanup();
-          reject(new Error('network'));
-        };
+        script.onerror = function(){ cleanup(); reject(new Error('network')); };
         script.src = WEB_APP_URL + '?action=scan&qr=' + encodeURIComponent(qrValue) + '&callback=' + encodeURIComponent(callbackName) + '&_ts=' + Date.now();
         document.body.appendChild(script);
       });
@@ -528,8 +406,8 @@
       }
 
       const fullName = data.fullName || '';
-      const nationalId = data.nationalId || '';
-      const attendeeId = data.attendeeId || '';
+      const nationalId = toLatinDigits(data.nationalId || '');
+      const attendeeId = toLatinDigits(data.attendeeId || '');
       const organization = data.organization || '';
       const notes = data.notes || '';
 
@@ -538,7 +416,7 @@
       if(nationalId) meta += 'رقم الهوية: <strong>' + escapeHtml(nationalId) + '</strong><br>';
       if(attendeeId) meta += 'رقم المشارك: <strong>' + escapeHtml(attendeeId) + '</strong><br>';
       if(organization) meta += 'الجهة: <strong>' + escapeHtml(organization) + '</strong><br>';
-      if(notes) meta += escapeHtml(notes);
+      if(notes) meta += escapeHtml(toLatinDigits(notes));
 
       setMessage(data.statusCode, data.message || 'تمت المعالجة', meta || 'تمت قراءة الرمز ومعالجة النتيجة.');
     }
@@ -547,7 +425,6 @@
       scanLocked = false;
       isProcessing = false;
       showOverlay(false);
-
       setMessage('reset_ready', 'جاهز لمسح جديد', 'تمت إعادة التهيئة وسيتم تشغيل الكاميرا تلقائيًا.');
       if(shouldAutoRestart){
         await stopScannerInternal(true);
@@ -567,7 +444,6 @@
     document.getElementById('startBtn').addEventListener('click', startScanner);
     document.getElementById('stopBtn').addEventListener('click', stopScannerManually);
     document.getElementById('resetBtn').addEventListener('click', resetForNextScan);
-
     setMessage('neutral', 'بانتظار قراءة الرمز', 'اضغط على زر تشغيل الكاميرا لبدء التحضير.');
   </script>
 </body>
