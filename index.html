@@ -13,7 +13,7 @@
     *{box-sizing:border-box} html,body{height:100%}
     body{margin:0;font-family:"Cairo",system-ui,sans-serif;background:linear-gradient(180deg,#eff5f0 0%,#edf3ee 100%);color:var(--text);-webkit-font-smoothing:antialiased}
     .page{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:18px 12px 24px}
-    .shell{width:min(820px,100%);background:rgba(255,255,255,.96);border:1px solid #dde9e1;border-radius:26px;box-shadow:var(--shadow);padding:18px 18px 14px;position:relative;overflow:hidden;transition:filter .18s ease,box-shadow .18s ease}
+    .shell{width:min(820px,100%);background:rgba(255,255,255,.96);border:1px solid #dde9e1;border-radius:26px;box-shadow:var(--shadow);padding:18px 18px 14px;position:relative;overflow:hidden;transition:filter .18s ease, box-shadow .18s ease}
     .logo-wrap{text-align:center;margin-top:2px}
     .logo-wrap img{width:min(210px,58%);max-height:78px;object-fit:contain;display:inline-block}
     .hero-gap{height:42px}
@@ -36,6 +36,9 @@
     .pill-blue{background:#e8f1ff;color:#246cce}.pill-green{background:#e7f8ee;color:#0b7a4b}.pill-orange{background:#fff3df;color:#bb7310}.pill-red{background:#ffe8e8;color:#c13838}
     .result-title{margin:0 0 6px;font-size:18px;font-weight:700;color:#0b6f45;line-height:1.5}
     .result-text{font-size:13px;color:#315241;line-height:1.9;margin:0}
+    .confirm-wrap{display:none;margin-top:12px}
+    .confirm-btn{appearance:none;border:none;border-radius:13px;padding:10px 14px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:42px;color:#fff;background:linear-gradient(180deg,#17a15f,#0e844f);box-shadow:0 6px 16px rgba(16,132,79,.18)}
+    .confirm-btn.early{background:linear-gradient(180deg,#d85a5a,#c23d3d)}
     .overlay{position:absolute;inset:0;background:rgba(245,250,246,.72);display:none;align-items:center;justify-content:center;z-index:8;backdrop-filter:blur(2px)}
     .overlay.show{display:flex}
     .overlay-card{background:#fff;border:1px solid #dce8e0;border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(18,72,43,.08);color:#24563f;font-size:13px;font-weight:700}
@@ -61,21 +64,15 @@
   <div class="page">
     <main class="shell" id="shell">
       <div class="overlay" id="overlay">
-        <div class="overlay-card">
-          <div class="spinner"></div>
-          <div>جارٍ التحقق من الحضور...</div>
-        </div>
+        <div class="overlay-card"><div class="spinner"></div><div>جارٍ التحقق من الحالة...</div></div>
       </div>
 
-      <div class="logo-wrap">
-        <img id="logoImg" src="https://alabbadma.github.io/QR-Reader/moe-logo.png" alt="شعار وزارة التعليم">
-      </div>
-
+      <div class="logo-wrap"><img id="logoImg" src="https://alabbadma.github.io/QR-Reader/moe-logo.png" alt="شعار وزارة التعليم"></div>
       <div class="hero-gap"></div>
 
       <div class="title-wrap">
         <h1 class="title">حضور المؤتمر التجريبي</h1>
-        <div class="subtitle">نظام كشك التحضير عبر QR</div>
+        <div class="subtitle">نظام الحضور والانصراف عبر QR</div>
       </div>
 
       <div class="info-grid">
@@ -91,7 +88,10 @@
           <div class="result-card">
             <div id="resultPill" class="result-pill pill-blue">النظام جاهز</div>
             <h2 id="resultTitle" class="result-title">جاهز لقراءة الرمز</h2>
-            <p id="resultText" class="result-text">اضغط على زر «اضغط هنا للتحضير» لفتح الكاميرا الأمامية وبدء التحضير، وبعد ظهور النتيجة اضغطه مرة أخرى للتحضير الجديد.</p>
+            <p id="resultText" class="result-text">اضغط على زر «اضغط هنا للتحضير» لفتح الكاميرا الأمامية وبدء قراءة الرمز. إذا كان الزائر قد حضر سابقًا فسيتم عرض رسالة الانصراف المناسبة هنا.</p>
+            <div id="confirmWrap" class="confirm-wrap">
+              <button id="confirmExitBtn" class="confirm-btn" type="button">اعتماد تسجيل الخروج</button>
+            </div>
           </div>
         </div>
       </div>
@@ -104,9 +104,9 @@
         <div class="legend-title">دلالات الألوان</div>
         <div class="legend-grid">
           <div class="legend-item">🟦 جاهزية / تشغيل / مسح جديد</div>
-          <div class="legend-item">🟩 تم التحضير</div>
-          <div class="legend-item">🟧 تم التحضير مسبقًا</div>
-          <div class="legend-item">🟥 خارج الوقت / مرفوض</div>
+          <div class="legend-item">🟩 حضور / خروج طبيعي</div>
+          <div class="legend-item">🟧 تم التحضير مسبقًا / تم الانصراف مسبقًا</div>
+          <div class="legend-item">🟥 خارج الوقت / خروج مبكر / مرفوض</div>
         </div>
       </div>
 
@@ -126,36 +126,37 @@
 
       let html5QrCode = null, cameraRunning = false, scanLocked = false, isProcessing = false, scriptCounter = 0, audioCtx = null, clockTimer = null;
       let currentFacingMode = "user";
-      let shellEl, overlayEl, primaryBtn, logoImg, readerStage, resultStage, resultPill, resultTitle, resultText, clockEl, gregEl, dayEl, hijriEl;
+      let pendingExitQr = "";
+      let pendingExitEarly = false;
+      let shellEl, overlayEl, primaryBtn, logoImg, readerStage, resultStage, resultPill, resultTitle, resultText, clockEl, gregEl, dayEl, hijriEl, confirmWrap, confirmExitBtn;
 
       function getEl(id){ return document.getElementById(id); }
       function initRefs(){
         shellEl = getEl("shell"); overlayEl = getEl("overlay"); primaryBtn = getEl("primaryBtn"); logoImg = getEl("logoImg");
         readerStage = getEl("readerStage"); resultStage = getEl("resultStage"); resultPill = getEl("resultPill"); resultTitle = getEl("resultTitle"); resultText = getEl("resultText");
         clockEl = getEl("clockNow"); gregEl = getEl("gregDate"); dayEl = getEl("dayName"); hijriEl = getEl("hijriDate");
+        confirmWrap = getEl("confirmWrap"); confirmExitBtn = getEl("confirmExitBtn");
       }
       function initAudio(){ try{ const Ctx = window.AudioContext || window.webkitAudioContext || null; if(Ctx) audioCtx = new Ctx(); }catch(e){ audioCtx = null; } }
       function pad2(v){ return String(v).padStart(2, "0"); }
       function formatGregorianDate(d){ return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate()); }
       function formatTime24(d){ return pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds()); }
       function getArabicDayName(d){ const days = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"]; return days[d.getDay()] || "--"; }
-      function formatHijriDateSafe(d){
-        try{ return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn",{year:"numeric",month:"long",day:"numeric"}).format(d); }
-        catch(e1){ try{ return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-nu-latn",{year:"numeric",month:"long",day:"numeric"}).format(d); } catch(e2){ return "غير متاح"; } }
-      }
-      function updateClock(){
-        try{
-          const now = new Date();
-          if(clockEl) clockEl.textContent = formatTime24(now);
-          if(gregEl) gregEl.textContent = formatGregorianDate(now);
-          if(dayEl) dayEl.textContent = getArabicDayName(now);
-          if(hijriEl) hijriEl.textContent = formatHijriDateSafe(now);
-        }catch(err){ console.error("updateClock error:", err); }
-      }
+      function formatHijriDateSafe(d){ try{ return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn",{year:"numeric",month:"long",day:"numeric"}).format(d);}catch(e1){ try{ return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-nu-latn",{year:"numeric",month:"long",day:"numeric"}).format(d);}catch(e2){ return "غير متاح"; } } }
+      function updateClock(){ try{ const now = new Date(); if(clockEl) clockEl.textContent = formatTime24(now); if(gregEl) gregEl.textContent = formatGregorianDate(now); if(dayEl) dayEl.textContent = getArabicDayName(now); if(hijriEl) hijriEl.textContent = formatHijriDateSafe(now); }catch(err){ console.error("updateClock error:", err); } }
       function startClock(){ updateClock(); if(clockTimer) clearInterval(clockTimer); clockTimer = setInterval(updateClock, 1000); }
       function showOverlay(show){ if(overlayEl) overlayEl.classList.toggle("show", !!show); }
       function showReader(){ if(readerStage) readerStage.style.display = "block"; if(resultStage) resultStage.style.display = "none"; }
       function showResult(){ if(readerStage) readerStage.style.display = "none"; if(resultStage) resultStage.style.display = "flex"; }
+      function hideConfirm(){ pendingExitQr = ""; pendingExitEarly = false; if(confirmWrap) confirmWrap.style.display = "none"; if(confirmExitBtn) confirmExitBtn.className = "confirm-btn"; }
+      function showConfirm(qrValue, early){
+        pendingExitQr = qrValue || ""; pendingExitEarly = !!early;
+        if(confirmWrap) confirmWrap.style.display = "block";
+        if(confirmExitBtn){
+          confirmExitBtn.className = "confirm-btn" + (early ? " early" : "");
+          confirmExitBtn.textContent = early ? "اعتماد الخروج المبكر" : "اعتماد تسجيل الخروج";
+        }
+      }
       function triggerFlash(kind){
         if(!shellEl) return;
         shellEl.classList.remove("flash-success","flash-info","flash-warning","flash-error");
@@ -181,6 +182,7 @@
       }
       function playSound(type){ try{ if(audioCtx && audioCtx.state === "suspended") audioCtx.resume().catch(()=>{}); beepSequence(type); }catch(e){} }
       function setResult(kind, title, text, pillText){
+        hideConfirm();
         if(!resultPill || !resultTitle || !resultText) return;
         resultPill.className = "result-pill";
         if(kind === "success") resultPill.classList.add("pill-green");
@@ -192,7 +194,6 @@
       }
       function sanitizeQr(text){ return String(text || "").trim(); }
       async function ensureScanner(){ if(!window.Html5Qrcode) throw new Error("Html5Qrcode library not loaded"); if(!html5QrCode) html5QrCode = new window.Html5Qrcode("reader"); return html5QrCode; }
-
       async function startScanner(){
         if(cameraRunning || isProcessing) return;
         try{
@@ -212,21 +213,18 @@
           setResult("error","تعذر تشغيل الكاميرا","تأكد من السماح بإذن الكاميرا لهذا الرابط، ثم حاول مرة أخرى.","تعذر التشغيل");
         }
       }
-
       async function stopScannerInternal(silent){
         if(!html5QrCode || !cameraRunning) return;
         try{ await html5QrCode.stop(); }catch(err){ console.warn("stop error", err); }
         cameraRunning = false;
         if(!silent){ showResult(); setResult("info","تم إيقاف الكاميرا","يمكنك الضغط على الزر مرة أخرى للبدء من جديد.","تم الإيقاف"); }
       }
-
       async function resetForNewScan(){
-        scanLocked = false; isProcessing = false; showOverlay(false); showReader();
+        scanLocked = false; isProcessing = false; showOverlay(false); showReader(); hideConfirm();
         setResult("info","جاهز لقراءة الرمز","تمت إعادة التهيئة بنجاح. ستعود الكاميرا للعمل تلقائيًا الآن.","مسح جديد");
         await stopScannerInternal(true);
         await startScanner();
       }
-
       function jsonpRequest(params){
         return new Promise((resolve, reject) => {
           const callbackName = "jsonp_callback_" + (++scriptCounter) + "_" + Date.now();
@@ -240,16 +238,15 @@
           document.body.appendChild(script);
         });
       }
-
       async function onScanSuccess(decodedText){
         if(scanLocked || isProcessing) return;
         const qrValue = sanitizeQr(decodedText); if(!qrValue) return;
         scanLocked = true; isProcessing = true; showResult(); showOverlay(true);
-        setResult("info","تم التقاط الرمز","جارٍ التحقق من بيانات الزائر الآن...","جارٍ التحقق");
+        setResult("info","تم التقاط الرمز","جارٍ التحقق من حالة الزائر الآن...","جارٍ التحقق");
         await stopScannerInternal(true);
         try{
           const res = await jsonpRequest({action:"scan", qr: qrValue, kiosk: KIOSK_URL});
-          handleScanResponse(res);
+          handleScanResponse(res, qrValue);
         }catch(err){
           console.error(err);
           setResult("error","فشل الاتصال بالخدمة","تعذر إكمال العملية حاليًا. اضغط على الزر مرة أخرى للمحاولة من جديد.","فشل الاتصال");
@@ -257,35 +254,73 @@
           isProcessing = false; showOverlay(false);
         }
       }
-
-      function handleScanResponse(res){
+      function handleScanResponse(res, qrValue){
         const name = res && res.fullName ? " للاسم: " + res.fullName : "";
-        const timeText = res && res.attendanceTime ? " عند الساعة " + res.attendanceTime : "";
-        const firstTimeText = res && res.firstAttendanceTime ? "، ووقت الحضور الأول " + res.firstAttendanceTime : "";
+        const inTime = res && res.attendanceTime ? "، ووقت الحضور " + res.attendanceTime : "";
+        const outTime = res && res.checkoutTime ? " عند الساعة " + res.checkoutTime : "";
+        const firstOut = res && res.firstCheckoutTime ? "، ووقت الخروج الأول " + res.firstCheckoutTime : "";
         switch((res && res.state) || ""){
-          case "checked_in": setResult("success","تم التحضير بنجاح","تم تسجيل الحضور بنجاح" + name + timeText + ".","تم التحضير"); break;
-          case "already_checked_in": setResult("warning","تم التحضير مسبقًا","هذا المشارك مسجل حضوره مسبقًا" + name + firstTimeText + ".","تحضير مسبق"); break;
-          case "before_allowed_time": setResult("error","خارج الوقت المحدد","لا يمكن تسجيل الحضور الآن" + name + ". المحاولة كانت قبل وقت بداية التحضير المسموح.","خارج الوقت"); break;
-          case "after_allowed_time": setResult("error","انتهى وقت التحضير","لا يمكن تسجيل الحضور الآن" + name + ". انتهت نافذة التحضير المحددة لهذا اليوم.","انتهى الوقت"); break;
-          case "not_found": setResult("error","الرمز غير معروف","تعذر العثور على هذا المشارك في قاعدة البيانات. تأكد من صحة البطاقة أو البيانات.","غير موجود"); break;
-          default: setResult("error","تعذر إكمال العملية",(res && res.message) || "حدث خطأ غير متوقع أثناء معالجة الطلب.","تعذر التنفيذ"); break;
+          case "checked_in":
+            setResult("success","تم التحضير بنجاح","تم تسجيل الحضور بنجاح" + name + outTime + ".","تم التحضير");
+            break;
+          case "pending_checkout":
+            setResult("success","تسجيل خروج","سيتم تسجيل خروج الزائر" + name + outTime + inTime + ". اضغط اعتماد لتثبيت الخروج.","تسجيل خروج");
+            showConfirm(qrValue, false);
+            break;
+          case "pending_early_checkout":
+            setResult("error","تسجيل خروج مبكر","سيتم تسجيل خروج مبكر للزائر" + name + outTime + inTime + ". اضغط اعتماد لتثبيت الخروج المبكر.","خروج مبكر");
+            showConfirm(qrValue, true);
+            break;
+          case "checked_out":
+            setResult("success","تم تسجيل الخروج بنجاح","تم اعتماد تسجيل الخروج بنجاح" + name + outTime + ".","تم الانصراف");
+            break;
+          case "checked_out_early":
+            setResult("error","تم تسجيل الخروج المبكر بنجاح","تم اعتماد الخروج المبكر بنجاح" + name + outTime + ".","خروج مبكر");
+            break;
+          case "already_checked_out":
+            setResult("warning","تم تسجيل الانصراف مسبقًا","هذا الزائر تم تسجيل انصرافه مسبقًا" + name + firstOut + ".","انصراف مسبق");
+            break;
+          case "before_allowed_time":
+            setResult("error","خارج الوقت المحدد","لا يمكن تسجيل الحضور الآن" + name + ". المحاولة كانت قبل وقت بداية التحضير المسموح.","خارج الوقت");
+            break;
+          case "after_allowed_time":
+            setResult("error","انتهى وقت التحضير","لا يمكن تسجيل الحضور الآن" + name + ". انتهت نافذة التحضير المحددة لهذا اليوم.","انتهى الوقت");
+            break;
+          case "not_found":
+            setResult("error","الرمز غير معروف","تعذر العثور على هذا المشارك في قاعدة البيانات. تأكد من صحة البطاقة أو البيانات.","غير موجود");
+            break;
+          case "not_checked_in":
+            setResult("error","لا يمكن تسجيل الانصراف","لا يمكن تسجيل الانصراف قبل تسجيل الحضور أولًا.","مرفوض");
+            break;
+          default:
+            setResult("error","تعذر إكمال العملية",(res && res.message) || "حدث خطأ غير متوقع أثناء معالجة الطلب.","تعذر التنفيذ");
+            break;
         }
       }
-
+      async function confirmExit(){
+        if(!pendingExitQr || isProcessing) return;
+        isProcessing = true; showOverlay(true);
+        try{
+          const res = await jsonpRequest({action:"confirmCheckout", qr: pendingExitQr});
+          handleScanResponse(res, pendingExitQr);
+        }catch(err){
+          console.error(err);
+          setResult("error","تعذر اعتماد الانصراف","حدث خطأ أثناء اعتماد الانصراف. حاول مرة أخرى.","تعذر التنفيذ");
+        }finally{
+          isProcessing = false; showOverlay(false);
+        }
+      }
       async function handlePrimaryAction(){
         if(isProcessing) return;
         if(scanLocked || (resultStage && resultStage.style.display === "flex" && !cameraRunning)){ await resetForNewScan(); return; }
         if(!cameraRunning){ await startScanner(); return; }
         await resetForNewScan();
       }
-
-      function bindEvents(){ if(primaryBtn) primaryBtn.addEventListener("click", handlePrimaryAction); }
-
+      function bindEvents(){ if(primaryBtn) primaryBtn.addEventListener("click", handlePrimaryAction); if(confirmExitBtn) confirmExitBtn.addEventListener("click", confirmExit); }
       function boot(){
         initRefs(); initAudio(); if(logoImg) logoImg.src = LOGO_FILE; bindEvents(); startClock(); showResult();
-        setResult("info","جاهز لقراءة الرمز","اضغط على زر «اضغط هنا للتحضير» لفتح الكاميرا الأمامية وبدء التحضير، وبعد ظهور النتيجة اضغطه مرة أخرى للتحضير الجديد.","النظام جاهز");
+        setResult("info","جاهز لقراءة الرمز","اضغط على زر «اضغط هنا للتحضير» لفتح الكاميرا الأمامية وبدء القراءة. إذا كان الزائر حاضرًا من قبل فسيتم عرض رسالة الانصراف المناسبة هنا.","النظام جاهز");
       }
-
       if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", boot); } else { boot(); }
     })();
   </script>
