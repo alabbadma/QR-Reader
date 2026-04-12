@@ -578,25 +578,61 @@
       overlayEl.classList.toggle("show", !!show);
     }
 
-    function updateClock(){
-      const now = new Date();
-      const timeFmt = new Intl.DateTimeFormat("ar-SA-u-nu-latn", {
-        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
-      });
-      const gregFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-u-nu-latn", {
-        year: "numeric", month: "2-digit", day: "2-digit"
-      });
-      const dayFmt = new Intl.DateTimeFormat("ar-SA", { weekday: "long" });
-      const hijriFmt = new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-u-nu-latn", {
-        year: "numeric", month: "long", day: "numeric"
-      });
+<script>
+function updateClock(){
+  const now = new Date();
 
-      document.getElementById("clockNow").textContent = timeFmt.format(now);
-      document.getElementById("gregDate").textContent = gregFmt.format(now);
-      document.getElementById("dayName").textContent = dayFmt.format(now);
-      document.getElementById("hijriDate").textContent = hijriFmt.format(now);
+  try {
+    const timeFmt = new Intl.DateTimeFormat("ar-SA-u-nu-latn", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    });
+
+    const gregFmt = new Intl.DateTimeFormat("en-CA-u-nu-latn", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    });
+
+    const dayFmt = new Intl.DateTimeFormat("ar-SA", {
+      weekday: "long"
+    });
+
+    let hijriText = "";
+    try {
+      const hijriFmt = new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-u-nu-latn", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+      hijriText = hijriFmt.format(now);
+    } catch (e) {
+      const hijriFallback = new Intl.DateTimeFormat("ar-SA-u-ca-islamic-u-nu-latn", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+      hijriText = hijriFallback.format(now);
     }
 
+    const clockEl = document.getElementById("clockNow");
+    const gregEl = document.getElementById("gregDate");
+    const dayEl = document.getElementById("dayName");
+    const hijriEl = document.getElementById("hijriDate");
+
+    if (clockEl) clockEl.textContent = timeFmt.format(now);
+    if (gregEl) gregEl.textContent = gregFmt.format(now);
+    if (dayEl) dayEl.textContent = dayFmt.format(now);
+    if (hijriEl) hijriEl.textContent = hijriText;
+
+  } catch (err) {
+    console.error("Clock update failed:", err);
+  }
+}
+</script>
+  
     function sanitizeQr(text){
       return String(text || "").trim();
     }
