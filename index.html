@@ -9,352 +9,104 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/html5-qrcode" defer></script>
   <style>
-    :root{
-      --green:#0b7a4b;
-      --blue:#2577d8;
-      --orange:#ef9b19;
-      --red:#d84343;
-      --text:#174b34;
-      --muted:#61756a;
-      --line:#d7e6dc;
-      --shadow:0 12px 34px rgba(18,72,43,.08);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:"Cairo",system-ui,sans-serif;
-      background:linear-gradient(180deg,#eff5f0 0%,#edf3ee 100%);
-      color:var(--text);
-      -webkit-font-smoothing:antialiased;
-    }
-    .page{
-      min-height:100%;
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      padding:18px 12px 24px;
-    }
-    .shell{
-      width:min(820px,100%);
-      background:rgba(255,255,255,.96);
-      border:1px solid #dde9e1;
-      border-radius:26px;
-      box-shadow:var(--shadow);
-      padding:18px 18px 14px;
-      position:relative;
-      overflow:hidden;
-      transition:filter .18s ease, box-shadow .18s ease;
-    }
+    :root{--green:#0b7a4b;--blue:#2577d8;--orange:#ef9b19;--red:#d84343;--text:#174b34;--line:#d7e6dc;--shadow:0 12px 34px rgba(18,72,43,.08)}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:"Cairo",system-ui,sans-serif;background:linear-gradient(180deg,#eff5f0 0%,#edf3ee 100%);color:var(--text);-webkit-font-smoothing:antialiased}
+    .page{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:18px 12px 24px}
+    .shell{width:min(820px,100%);background:rgba(255,255,255,.96);border:1px solid #dde9e1;border-radius:26px;box-shadow:var(--shadow);padding:18px 18px 14px;position:relative;overflow:hidden;transition:filter .18s ease, box-shadow .18s ease}
     .logo-wrap{text-align:center;margin-top:2px}
     .logo-wrap img{width:min(210px,58%);max-height:78px;object-fit:contain;display:inline-block}
     .hero-gap{height:42px}
     .title-wrap{text-align:center;margin-bottom:12px}
     .title{margin:0;font-size:20px;line-height:1.4;color:#0b6f45;font-weight:700}
     .subtitle{margin-top:4px;font-size:11px;color:#5d7d6d;font-weight:600}
-
-    .info-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .mini{
-      border:1px solid var(--line);
-      border-radius:15px;
-      padding:8px 10px;
-      background:#fbfdfb;
-      min-height:72px;
-      text-align:center;
-    }
+    .info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px}
+    .mini{border:1px solid var(--line);border-radius:15px;padding:8px 10px;background:#fbfdfb;min-height:72px;text-align:center}
     .mini-label{font-size:10px;color:#6b7b72;margin-bottom:4px;font-weight:600}
     .mini-value{font-size:15px;font-weight:700;line-height:1.5;color:#0f5f3f;word-break:break-word}
-
-    .reader-box{
-      position:relative;
-      border-radius:18px;
-      overflow:hidden;
-      background:#eff4f0;
-      border:1px solid #d7e2db;
-      min-height:290px;
-      margin-bottom:10px;
-    }
-    #readerStage,#resultStage{
-      min-height:290px;
-      width:100%;
-    }
-    #readerStage{
-      display:block;
-      background:#eaf1eb;
-    }
-    #resultStage{
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      background:linear-gradient(180deg,#f9fcfa 0%,#eff6f1 100%);
-    }
-    #reader{
-      width:100%;
-      min-height:290px;
-      background:#eaf1eb;
-    }
-    #reader video{
-      border-radius:18px !important;
-      object-fit:cover !important;
-      display:block !important;
-      width:100% !important;
-      height:100% !important;
-    }
-    #reader__scan_region,
-    #reader__dashboard_section_swaplink,
-    #reader__filescan_input,
-    #reader__dashboard_section_csr,
-    #reader__dashboard_section_fsr,
-    #reader img[alt="Info icon"],
-    #reader svg,
-    #reader canvas{display:none !important}
-
-    .result-card{
-      width:100%;
-      max-width:560px;
-      background:#fff;
-      border:1px solid #dbe7df;
-      border-radius:18px;
-      box-shadow:0 8px 22px rgba(18,72,43,.06);
-      padding:16px 16px 14px;
-      text-align:center;
-    }
-    .result-pill{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:4px 10px;
-      border-radius:999px;
-      font-size:11px;
-      font-weight:700;
-      line-height:1;
-      margin-bottom:10px;
-    }
-    .pill-blue{background:#e8f1ff;color:#246cce}
-    .pill-green{background:#e7f8ee;color:#0b7a4b}
-    .pill-orange{background:#fff3df;color:#bb7310}
-    .pill-red{background:#ffe8e8;color:#c13838}
+    .reader-box{position:relative;border-radius:18px;overflow:hidden;background:#eff4f0;border:1px solid #d7e2db;min-height:290px;margin-bottom:10px}
+    #readerStage,#resultStage{min-height:290px;width:100%}
+    #readerStage{display:block;background:#eaf1eb}
+    #resultStage{display:none;align-items:center;justify-content:center;padding:18px;background:linear-gradient(180deg,#f9fcfa 0%,#eff6f1 100%)}
+    #reader{width:100%;min-height:290px;background:#eaf1eb}
+    #reader video{border-radius:18px !important;object-fit:cover !important;display:block !important;width:100% !important;height:100% !important}
+    #reader__scan_region,#reader__dashboard_section_swaplink,#reader__filescan_input,#reader__dashboard_section_csr,#reader__dashboard_section_fsr,#reader img[alt='Info icon'],#reader svg,#reader canvas{display:none !important}
+    .result-card{width:100%;max-width:560px;background:#fff;border:1px solid #dbe7df;border-radius:18px;box-shadow:0 8px 22px rgba(18,72,43,.06);padding:16px 16px 14px;text-align:center}
+    .result-pill{display:inline-flex;align-items:center;justify-content:center;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;line-height:1;margin-bottom:10px}
+    .pill-blue{background:#e8f1ff;color:#246cce}.pill-green{background:#e7f8ee;color:#0b7a4b}.pill-orange{background:#fff3df;color:#bb7310}.pill-red{background:#ffe8e8;color:#c13838}
     .result-title{margin:0 0 6px;font-size:18px;font-weight:700;color:#0b6f45;line-height:1.5}
     .result-text{font-size:13px;color:#315241;line-height:1.9;margin:0}
-
-    .overlay{
-      position:absolute;
-      inset:0;
-      background:rgba(245,250,246,.72);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:8;
-      backdrop-filter:blur(2px);
-    }
+    .confirm-wrap{display:none;margin-top:12px}
+    .confirm-btn{appearance:none;border:none;border-radius:13px;padding:10px 14px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:42px;color:#fff;background:linear-gradient(180deg,#17a15f,#0e844f);box-shadow:0 6px 16px rgba(16,132,79,.18)}
+    .confirm-btn.early{background:linear-gradient(180deg,#d85a5a,#c23d3d)}
+    .overlay{position:absolute;inset:0;background:rgba(245,250,246,.60);display:none;align-items:center;justify-content:center;z-index:8;backdrop-filter:blur(1px)}
     .overlay.show{display:flex}
-    .overlay-card{
-      background:#fff;
-      border:1px solid #dce8e0;
-      border-radius:18px;
-      padding:14px 16px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      box-shadow:0 8px 24px rgba(18,72,43,.08);
-      color:#24563f;
-      font-size:13px;
-      font-weight:700;
-    }
-    .spinner{
-      width:20px;height:20px;border-radius:50%;
-      border:3px solid #d9ebe0;border-top-color:#15935b;
-      animation:spin .8s linear infinite;
-    }
-
-    .controls{
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr 1fr;
-      gap:10px;
-      margin-bottom:10px;
-    }
-    button{
-      appearance:none;
-      border:none;
-      border-radius:13px;
-      padding:10px 12px;
-      font-family:inherit;
-      font-size:13px;
-      font-weight:700;
-      cursor:pointer;
-      transition:transform .12s ease,opacity .12s ease;
-      min-height:42px;
-    }
-    button:hover{transform:translateY(-1px)}
-    button:active{transform:translateY(0)}
-    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
-    .btn-green{background:linear-gradient(180deg,#17a15f,#0e844f);color:#fff;box-shadow:0 6px 16px rgba(16,132,79,.18)}
-    .btn-light{background:#f6f9f7;color:#315241;border:1px solid #d8e4dc}
-    .btn-blue{background:linear-gradient(180deg,#2c86ef,#2577d8);color:#fff;box-shadow:0 6px 16px rgba(37,119,216,.16)}
-
-    .legend-box{
-      border:1px solid #d7e6dc;
-      border-radius:14px;
-      padding:10px 12px;
-      background:#fbfdfb;
-      margin-bottom:10px;
-    }
-    .legend-title{
-      font-size:10px;
-      font-weight:700;
-      color:#5d7468;
-      margin-bottom:8px;
-      text-align:center;
-    }
-    .legend-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:4px 10px;
-    }
-    .legend-item{
-      font-size:10px;
-      color:#345444;
-      line-height:1.8;
-    }
-
-    .footer{
-      text-align:center;
-      margin-top:12px;
-      color:#51695d;
-      font-size:11px;
-      line-height:1.9;
-      font-weight:400;
-    }
-
-    .flash-success{animation:flashSuccess .95s ease-out}
-    .flash-info{animation:flashInfo .9s ease-out}
-    .flash-warning{animation:flashWarning .95s ease-out}
-    .flash-error{animation:flashError .95s ease-out}
-
+    .overlay-card{background:#fff;border:1px solid #dce8e0;border-radius:18px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(18,72,43,.08);color:#24563f;font-size:13px;font-weight:700}
+    .spinner{width:20px;height:20px;border-radius:50%;border:3px solid #d9ebe0;border-top-color:#15935b;animation:spin .8s linear infinite}
+    .controls{margin-bottom:10px}
+    .btn-primary{width:100%;max-width:320px;margin:0 auto;display:block;appearance:none;border:none;border-radius:14px;padding:11px 14px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;min-height:44px;color:#fff;background:linear-gradient(180deg,#17a15f,#0e844f);box-shadow:0 6px 16px rgba(16,132,79,.18);transition:transform .12s ease,opacity .12s ease}
+    .btn-primary:hover{transform:translateY(-1px)} .btn-primary:active{transform:translateY(0)} .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .legend-box{border:1px solid #d7e6dc;border-radius:14px;padding:10px 12px;background:#fbfdfb;margin-bottom:10px}
+    .legend-title{font-size:10px;font-weight:700;color:#5d7468;margin-bottom:8px;text-align:center}
+    .legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+    .legend-item{font-size:10px;color:#345444;line-height:1.8}
+    .footer{text-align:center;margin-top:12px;color:#51695d;font-size:11px;line-height:1.9;font-weight:400}
+    .flash-success{animation:flashSuccess .95s ease-out}.flash-info{animation:flashInfo .9s ease-out}.flash-warning{animation:flashWarning .95s ease-out}.flash-error{animation:flashError .95s ease-out}
     @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes flashSuccess{
-      0%{filter:brightness(1);box-shadow:var(--shadow)}
-      12%{filter:brightness(1.22);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 24px rgba(55,255,156,.40),0 0 54px rgba(55,255,156,.28)}
-      28%{filter:brightness(1.02)}
-      40%{filter:brightness(1.18);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 20px rgba(55,255,156,.32)}
-      62%{filter:brightness(1.01)}
-      76%{filter:brightness(1.13);box-shadow:0 0 0 2px rgba(255,255,255,.68),0 0 16px rgba(55,255,156,.24)}
-      100%{filter:brightness(1);box-shadow:var(--shadow)}
-    }
-    @keyframes flashInfo{
-      0%{filter:brightness(1);box-shadow:var(--shadow)}
-      12%{filter:brightness(1.2);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 24px rgba(74,162,255,.38),0 0 54px rgba(74,162,255,.24)}
-      28%{filter:brightness(1.02)}
-      40%{filter:brightness(1.16);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 18px rgba(74,162,255,.30)}
-      62%{filter:brightness(1.01)}
-      76%{filter:brightness(1.11);box-shadow:0 0 0 2px rgba(255,255,255,.68),0 0 15px rgba(74,162,255,.20)}
-      100%{filter:brightness(1);box-shadow:var(--shadow)}
-    }
-    @keyframes flashWarning{
-      0%{filter:brightness(1);box-shadow:var(--shadow)}
-      12%{filter:brightness(1.2);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 24px rgba(255,179,59,.38),0 0 54px rgba(255,179,59,.24)}
-      28%{filter:brightness(1.02)}
-      40%{filter:brightness(1.16);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 18px rgba(255,179,59,.30)}
-      62%{filter:brightness(1.01)}
-      76%{filter:brightness(1.11);box-shadow:0 0 0 2px rgba(255,255,255,.68),0 0 15px rgba(255,179,59,.20)}
-      100%{filter:brightness(1);box-shadow:var(--shadow)}
-    }
-    @keyframes flashError{
-      0%{filter:brightness(1);box-shadow:var(--shadow)}
-      12%{filter:brightness(1.2);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 24px rgba(255,83,83,.38),0 0 54px rgba(255,83,83,.24)}
-      28%{filter:brightness(1.02)}
-      40%{filter:brightness(1.16);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 18px rgba(255,83,83,.30)}
-      62%{filter:brightness(1.01)}
-      76%{filter:brightness(1.11);box-shadow:0 0 0 2px rgba(255,255,255,.68),0 0 15px rgba(255,83,83,.20)}
-      100%{filter:brightness(1);box-shadow:var(--shadow)}
-    }
-
-    @media (max-width:760px){
-      .page{padding:10px}
-      .shell{padding:14px 12px 12px;border-radius:22px}
-      .hero-gap{height:28px}
-      .logo-wrap img{width:min(180px,65%)}
-      .info-grid{grid-template-columns:1fr 1fr}
-      .controls{grid-template-columns:1fr 1fr}
-      .legend-grid{grid-template-columns:1fr}
-      .reader-box,#readerStage,#resultStage,#reader{min-height:250px}
-      .title{font-size:19px}
-    }
+    @keyframes flashSuccess{0%{filter:brightness(1);box-shadow:var(--shadow)}12%{filter:brightness(1.22);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 24px rgba(55,255,156,.40),0 0 54px rgba(55,255,156,.28)}28%{filter:brightness(1.02)}40%{filter:brightness(1.18);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 20px rgba(55,255,156,.32)}62%{filter:brightness(1.01)}76%{filter:brightness(1.13);box-shadow:0 0 0 2px rgba(255,255,255,.68),0 0 16px rgba(55,255,156,.24)}100%{filter:brightness(1);box-shadow:var(--shadow)}}
+    @keyframes flashInfo{0%{filter:brightness(1);box-shadow:var(--shadow)}12%{filter:brightness(1.2);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 24px rgba(74,162,255,.38),0 0 54px rgba(74,162,255,.24)}28%{filter:brightness(1.02)}40%{filter:brightness(1.16);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 18px rgba(74,162,255,.30)}62%{filter:brightness(1.01)}76%{filter:brightness(1.11);box-shadow:0 0 0 2px rgba(255,255,255,.68),0 0 15px rgba(74,162,255,.20)}100%{filter:brightness(1);box-shadow:var(--shadow)}}
+    @keyframes flashWarning{0%{filter:brightness(1);box-shadow:var(--shadow)}12%{filter:brightness(1.2);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 24px rgba(255,179,59,.38),0 0 54px rgba(255,179,59,.24)}28%{filter:brightness(1.02)}40%{filter:brightness(1.16);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 18px rgba(255,179,59,.30)}62%{filter:brightness(1.01)}76%{filter:brightness(1.11);box-shadow:0 0 0 2px rgba(255,255,255,.68),0 0 15px rgba(255,179,59,.20)}100%{filter:brightness(1);box-shadow:var(--shadow)}}
+    @keyframes flashError{0%{filter:brightness(1);box-shadow:var(--shadow)}12%{filter:brightness(1.2);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 24px rgba(255,83,83,.38),0 0 54px rgba(255,83,83,.24)}28%{filter:brightness(1.02)}40%{filter:brightness(1.16);box-shadow:0 0 0 2px rgba(255,255,255,.82),0 0 18px rgba(255,83,83,.30)}62%{filter:brightness(1.01)}76%{filter:brightness(1.11);box-shadow:0 0 0 2px rgba(255,255,255,.68),0 0 15px rgba(255,83,83,.20)}100%{filter:brightness(1);box-shadow:var(--shadow)}}
+    @media (max-width:760px){.page{padding:10px}.shell{padding:14px 12px 12px;border-radius:22px}.hero-gap{height:28px}.logo-wrap img{width:min(180px,65%)}.info-grid{grid-template-columns:1fr 1fr}.legend-grid{grid-template-columns:1fr}.reader-box,#readerStage,#resultStage,#reader{min-height:250px}.title{font-size:19px}.btn-primary{max-width:100%;font-size:14px;min-height:44px}}
   </style>
 </head>
 <body>
   <div class="page">
     <main class="shell" id="shell">
       <div class="overlay" id="overlay">
-        <div class="overlay-card">
-          <div class="spinner"></div>
-          <div>جارٍ التحقق من الحضور...</div>
-        </div>
+        <div class="overlay-card"><div class="spinner"></div><div>جارٍ التحقق من الحالة...</div></div>
       </div>
 
-      <div class="logo-wrap">
-        <img id="logoImg" src="https://alabbadma.github.io/QR-Reader/moe-logo.png" alt="شعار وزارة التعليم">
-      </div>
-
+      <div class="logo-wrap"><img id="logoImg" src="https://alabbadma.github.io/QR-Reader/moe-logo.png" alt="شعار وزارة التعليم"></div>
       <div class="hero-gap"></div>
 
       <div class="title-wrap">
         <h1 class="title">حضور المؤتمر التجريبي</h1>
-        <div class="subtitle">نظام كشك التحضير عبر QR</div>
+        <div class="subtitle">نظام الحضور والانصراف عبر QR</div>
       </div>
 
       <div class="info-grid">
-        <div class="mini">
-          <div class="mini-label">الوقت الآن</div>
-          <div id="clockNow" class="mini-value">--:--:--</div>
-        </div>
-        <div class="mini">
-          <div class="mini-label">اليوم</div>
-          <div id="dayName" class="mini-value">--</div>
-        </div>
-        <div class="mini">
-          <div class="mini-label">التاريخ الميلادي</div>
-          <div id="gregDate" class="mini-value">----</div>
-        </div>
-        <div class="mini">
-          <div class="mini-label">التاريخ الهجري</div>
-          <div id="hijriDate" class="mini-value">----</div>
-        </div>
+        <div class="mini"><div class="mini-label">الوقت الآن</div><div id="clockNow" class="mini-value">--:--:--</div></div>
+        <div class="mini"><div class="mini-label">اليوم</div><div id="dayName" class="mini-value">--</div></div>
+        <div class="mini"><div class="mini-label">التاريخ الميلادي</div><div id="gregDate" class="mini-value">----</div></div>
+        <div class="mini"><div class="mini-label">التاريخ الهجري</div><div id="hijriDate" class="mini-value">----</div></div>
       </div>
 
       <div class="reader-box">
-        <div id="readerStage">
-          <div id="reader"></div>
-        </div>
+        <div id="readerStage"><div id="reader"></div></div>
         <div id="resultStage">
           <div class="result-card">
             <div id="resultPill" class="result-pill pill-blue">النظام جاهز</div>
             <h2 id="resultTitle" class="result-title">جاهز لقراءة الرمز</h2>
-            <p id="resultText" class="result-text">قم بتشغيل الكاميرا ثم وجّه رمز QR نحو العدسة، وبعد التقاطه ستظهر النتيجة هنا مباشرة.</p>
+            <p id="resultText" class="result-text">اضغط على زر «اضغط هنا للتحضير» لفتح الكاميرا الأمامية وبدء قراءة الرمز. إذا كان الزائر حاضرًا من قبل فسيتم عرض رسالة الانصراف المناسبة هنا.</p>
+            <div id="confirmWrap" class="confirm-wrap">
+              <button id="confirmExitBtn" class="confirm-btn" type="button">اعتماد تسجيل الخروج</button>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="controls">
-        <button id="startBtn" class="btn-green" type="button">تشغيل الكاميرا</button>
-        <button id="stopBtn" class="btn-light" type="button">إيقاف الكاميرا</button>
-        <button id="resetBtn" class="btn-blue" type="button">مسح جديد</button>
-        <button id="switchBtn" class="btn-light" type="button">تبديل الكاميرا</button>
+        <button id="primaryBtn" class="btn-primary" type="button">اضغط هنا للتحضير</button>
       </div>
 
       <div class="legend-box">
         <div class="legend-title">دلالات الألوان</div>
         <div class="legend-grid">
           <div class="legend-item">🟦 جاهزية / تشغيل / مسح جديد</div>
-          <div class="legend-item">🟩 تم التحضير</div>
-          <div class="legend-item">🟧 تم التحضير مسبقًا</div>
-          <div class="legend-item">🟥 خارج الوقت / مرفوض</div>
+          <div class="legend-item">🟩 حضور / خروج طبيعي</div>
+          <div class="legend-item">🟧 تم التحضير مسبقًا / تم الانصراف مسبقًا</div>
+          <div class="legend-item">🟥 خارج الوقت / خروج مبكر / مرفوض</div>
         </div>
       </div>
 
@@ -368,99 +120,42 @@
   <script>
     (function(){
       "use strict";
-
       const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw3DthwxExzbCDjxOOKGLa9XxLym6fLuYY8S4S0VvX3GBSkm9ApTUR74gL3hJwtNVqWGg/exec";
       const KIOSK_URL = "https://alabbadma.github.io/QR-Reader/";
       const LOGO_FILE = "https://alabbadma.github.io/QR-Reader/moe-logo.png";
 
-      let html5QrCode = null;
-      let cameraRunning = false;
-      let scanLocked = false;
-      let isProcessing = false;
-      let scriptCounter = 0;
-      let audioCtx = null;
-      let clockTimer = null;
-      let currentFacingMode = (window.innerWidth <= 760 ? "user" : "environment");
-
-      let shellEl, overlayEl, startBtn, stopBtn, resetBtn, switchBtn, logoImg;
-      let readerStage, resultStage, resultPill, resultTitle, resultText;
-      let clockEl, gregEl, dayEl, hijriEl;
+      let html5QrCode = null, cameraRunning = false, scanLocked = false, isProcessing = false, scriptCounter = 0, audioCtx = null, clockTimer = null;
+      let currentFacingMode = "user";
+      let pendingExitQr = "", pendingExitEarly = false;
+      let shellEl, overlayEl, primaryBtn, logoImg, readerStage, resultStage, resultPill, resultTitle, resultText, clockEl, gregEl, dayEl, hijriEl, confirmWrap, confirmExitBtn;
 
       function getEl(id){ return document.getElementById(id); }
-
       function initRefs(){
-        shellEl = getEl("shell");
-        overlayEl = getEl("overlay");
-        startBtn = getEl("startBtn");
-        stopBtn = getEl("stopBtn");
-        resetBtn = getEl("resetBtn");
-        switchBtn = getEl("switchBtn");
-        logoImg = getEl("logoImg");
-        readerStage = getEl("readerStage");
-        resultStage = getEl("resultStage");
-        resultPill = getEl("resultPill");
-        resultTitle = getEl("resultTitle");
-        resultText = getEl("resultText");
-        clockEl = getEl("clockNow");
-        gregEl = getEl("gregDate");
-        dayEl = getEl("dayName");
-        hijriEl = getEl("hijriDate");
+        shellEl = getEl("shell"); overlayEl = getEl("overlay"); primaryBtn = getEl("primaryBtn"); logoImg = getEl("logoImg");
+        readerStage = getEl("readerStage"); resultStage = getEl("resultStage"); resultPill = getEl("resultPill"); resultTitle = getEl("resultTitle"); resultText = getEl("resultText");
+        clockEl = getEl("clockNow"); gregEl = getEl("gregDate"); dayEl = getEl("dayName"); hijriEl = getEl("hijriDate");
+        confirmWrap = getEl("confirmWrap"); confirmExitBtn = getEl("confirmExitBtn");
       }
-
-      function initAudio(){
-        try{
-          const Ctx = window.AudioContext || window.webkitAudioContext || null;
-          if(Ctx) audioCtx = new Ctx();
-        }catch(e){ audioCtx = null; }
-      }
-
+      function initAudio(){ try{ const Ctx = window.AudioContext || window.webkitAudioContext || null; if(Ctx) audioCtx = new Ctx(); }catch(e){ audioCtx = null; } }
       function pad2(v){ return String(v).padStart(2, "0"); }
       function formatGregorianDate(d){ return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate()); }
       function formatTime24(d){ return pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds()); }
-      function getArabicDayName(d){
-        const days = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-        return days[d.getDay()] || "--";
-      }
-      function formatHijriDateSafe(d){
-        try{
-          return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn",{year:"numeric",month:"long",day:"numeric"}).format(d);
-        }catch(e1){
-          try{
-            return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-nu-latn",{year:"numeric",month:"long",day:"numeric"}).format(d);
-          }catch(e2){
-            return "غير متاح";
-          }
+      function getArabicDayName(d){ const days = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"]; return days[d.getDay()] || "--"; }
+      function formatHijriDateSafe(d){ try{ return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn",{year:"numeric",month:"long",day:"numeric"}).format(d);}catch(e1){ try{ return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-nu-latn",{year:"numeric",month:"long",day:"numeric"}).format(d);}catch(e2){ return "غير متاح"; } } }
+      function updateClock(){ try{ const now = new Date(); if(clockEl) clockEl.textContent = formatTime24(now); if(gregEl) gregEl.textContent = formatGregorianDate(now); if(dayEl) dayEl.textContent = getArabicDayName(now); if(hijriEl) hijriEl.textContent = formatHijriDateSafe(now); }catch(err){ console.error("updateClock error:", err); } }
+      function startClock(){ updateClock(); if(clockTimer) clearInterval(clockTimer); clockTimer = setInterval(updateClock, 1000); }
+      function showOverlay(show){ if(overlayEl) overlayEl.classList.toggle("show", !!show); }
+      function showReader(){ if(readerStage) readerStage.style.display = "block"; if(resultStage) resultStage.style.display = "none"; }
+      function showResult(){ if(readerStage) readerStage.style.display = "none"; if(resultStage) resultStage.style.display = "flex"; }
+      function hideConfirm(){ pendingExitQr = ""; pendingExitEarly = false; if(confirmWrap) confirmWrap.style.display = "none"; if(confirmExitBtn) confirmExitBtn.className = "confirm-btn"; }
+      function showConfirm(qrValue, early){
+        pendingExitQr = qrValue || ""; pendingExitEarly = !!early;
+        if(confirmWrap) confirmWrap.style.display = "block";
+        if(confirmExitBtn){
+          confirmExitBtn.className = "confirm-btn" + (early ? " early" : "");
+          confirmExitBtn.textContent = early ? "اعتماد الخروج المبكر" : "اعتماد تسجيل الخروج";
         }
       }
-      function updateClock(){
-        try{
-          const now = new Date();
-          if(clockEl) clockEl.textContent = formatTime24(now);
-          if(gregEl) gregEl.textContent = formatGregorianDate(now);
-          if(dayEl) dayEl.textContent = getArabicDayName(now);
-          if(hijriEl) hijriEl.textContent = formatHijriDateSafe(now);
-        }catch(err){
-          console.error("updateClock error:", err);
-        }
-      }
-      function startClock(){
-        updateClock();
-        if(clockTimer) clearInterval(clockTimer);
-        clockTimer = setInterval(updateClock, 1000);
-      }
-
-      function showOverlay(show){
-        if(overlayEl) overlayEl.classList.toggle("show", !!show);
-      }
-      function showReader(){
-        if(readerStage) readerStage.style.display = "block";
-        if(resultStage) resultStage.style.display = "none";
-      }
-      function showResult(){
-        if(readerStage) readerStage.style.display = "none";
-        if(resultStage) resultStage.style.display = "flex";
-      }
-
       function triggerFlash(kind){
         if(!shellEl) return;
         shellEl.classList.remove("flash-success","flash-info","flash-warning","flash-error");
@@ -470,186 +165,116 @@
         else if(kind === "error") shellEl.classList.add("flash-error");
         else shellEl.classList.add("flash-info");
       }
-
       function beepSequence(type){
         if(!audioCtx) return;
-        const patterns = {
-          success: [[880,.12,.18],[1175,.14,.24]],
-          info: [[740,.09,.12],[880,.09,.18]],
-          warning: [[520,.12,.16],[520,.12,.20]],
-          error: [[320,.16,.20],[250,.22,.24]]
-        };
-        const seq = patterns[type] || patterns.info;
-        const now = audioCtx.currentTime;
+        const patterns = {success:[[880,.10,.18],[1175,.12,.22]],info:[[740,.07,.12],[880,.07,.16]],warning:[[520,.10,.16],[520,.10,.20]],error:[[320,.14,.20],[250,.18,.24]]};
+        const seq = patterns[type] || patterns.info, now = audioCtx.currentTime;
         seq.forEach((part, i) => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = type === "error" ? "sawtooth" : "sine";
-          osc.frequency.value = part[0];
-          gain.gain.setValueAtTime(0.0001, now + i * 0.17);
-          gain.gain.exponentialRampToValueAtTime(part[2], now + i * 0.17 + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.17 + part[1]);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(now + i * 0.17);
-          osc.stop(now + i * 0.17 + part[1] + 0.02);
+          const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+          osc.type = type === "error" ? "sawtooth" : "sine"; osc.frequency.value = part[0];
+          gain.gain.setValueAtTime(0.0001, now + i * 0.15);
+          gain.gain.exponentialRampToValueAtTime(part[2], now + i * 0.15 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.15 + part[1]);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now + i * 0.15); osc.stop(now + i * 0.15 + part[1] + 0.02);
         });
       }
-      function playSound(type){
-        try{
-          if(audioCtx && audioCtx.state === "suspended") audioCtx.resume().catch(()=>{});
-          beepSequence(type);
-        }catch(e){}
-      }
-
+      function playSound(type){ try{ if(audioCtx && audioCtx.state === "suspended") audioCtx.resume().catch(()=>{}); beepSequence(type); }catch(e){} }
       function setResult(kind, title, text, pillText){
+        hideConfirm();
         if(!resultPill || !resultTitle || !resultText) return;
         resultPill.className = "result-pill";
         if(kind === "success") resultPill.classList.add("pill-green");
         else if(kind === "warning") resultPill.classList.add("pill-orange");
         else if(kind === "error") resultPill.classList.add("pill-red");
         else resultPill.classList.add("pill-blue");
-
-        resultPill.textContent = pillText || "النظام جاهز";
-        resultTitle.textContent = title || "";
-        resultText.textContent = text || "";
-        triggerFlash(kind);
-        playSound(kind === "success" ? "success" : kind === "warning" ? "warning" : kind === "error" ? "error" : "info");
+        resultPill.textContent = pillText || "النظام جاهز"; resultTitle.textContent = title || ""; resultText.textContent = text || "";
+        triggerFlash(kind); playSound(kind === "success" ? "success" : kind === "warning" ? "warning" : kind === "error" ? "error" : "info");
       }
-
-      function sanitizeQr(text){
-        return String(text || "").trim();
-      }
-
-      async function ensureScanner(){
-        if(!window.Html5Qrcode) throw new Error("Html5Qrcode library not loaded");
-        if(!html5QrCode) html5QrCode = new window.Html5Qrcode("reader");
-        return html5QrCode;
-      }
-
+      function sanitizeQr(text){ return String(text || "").trim(); }
+      async function ensureScanner(){ if(!window.Html5Qrcode) throw new Error("Html5Qrcode library not loaded"); if(!html5QrCode) html5QrCode = new window.Html5Qrcode("reader"); return html5QrCode; }
       async function startScanner(){
         if(cameraRunning || isProcessing) return;
         try{
-          await ensureScanner();
-          showReader();
-          const config = {
-            fps: 12,
-            aspectRatio: 1.333334,
-            disableFlip: false,
-            videoConstraints: { facingMode: currentFacingMode }
-          };
-          await html5QrCode.start(
-            { facingMode: currentFacingMode },
-            config,
-            onScanSuccess,
-            function(){}
-          );
+          await ensureScanner(); showReader();
+          const config = {fps:14, aspectRatio:1.333334, disableFlip:false, videoConstraints:{facingMode:currentFacingMode}};
+          try{
+            await html5QrCode.start({facingMode:"user"}, config, onScanSuccess, function(){});
+            currentFacingMode = "user";
+          }catch(frontErr){
+            await html5QrCode.start({facingMode:"environment"}, {...config, videoConstraints:{facingMode:"environment"}}, onScanSuccess, function(){});
+            currentFacingMode = "environment";
+          }
           cameraRunning = true;
-          setResult("info","تم تشغيل الكاميرا","الكاميرا جاهزة الآن. يمكنك توجيه أي رمز QR نحو العدسة وسيتم التقاطه من كامل مساحة الكاميرا.","الكاميرا جاهزة");
+          setResult("info","تم تشغيل الكاميرا","الكاميرا جاهزة الآن. وجّه الرمز نحو العدسة وسيتم التقاطه من كامل مساحة الكاميرا.","الكاميرا جاهزة");
         }catch(err){
-          console.error(err);
-          showResult();
+          console.error(err); showResult();
           setResult("error","تعذر تشغيل الكاميرا","تأكد من السماح بإذن الكاميرا لهذا الرابط، ثم حاول مرة أخرى.","تعذر التشغيل");
         }
       }
-
       async function stopScannerInternal(silent){
         if(!html5QrCode || !cameraRunning) return;
         try{ await html5QrCode.stop(); }catch(err){ console.warn("stop error", err); }
         cameraRunning = false;
-        if(!silent){
-          showResult();
-          setResult("info","تم إيقاف الكاميرا","يمكنك تشغيل الكاميرا مجددًا عند الحاجة.","تم الإيقاف");
-        }
+        if(!silent){ showResult(); setResult("info","تم إيقاف الكاميرا","يمكنك الضغط على الزر مرة أخرى للبدء من جديد.","تم الإيقاف"); }
       }
-
-      async function switchCamera(){
-        currentFacingMode = (currentFacingMode === "environment" ? "user" : "environment");
-        if(cameraRunning){
-          await stopScannerInternal(true);
-          await startScanner();
-        }else{
-          showResult();
-          setResult("info","تم تبديل الكاميرا", currentFacingMode === "environment" ? "تم اختيار الكاميرا الخلفية." : "تم اختيار الكاميرا الأمامية.","تم التبديل");
-        }
-      }
-
       async function resetForNewScan(){
-        scanLocked = false;
-        isProcessing = false;
-        showOverlay(false);
-        showReader();
+        scanLocked = false; isProcessing = false; showOverlay(false); showReader(); hideConfirm();
         setResult("info","جاهز لقراءة الرمز","تمت إعادة التهيئة بنجاح. ستعود الكاميرا للعمل تلقائيًا الآن.","مسح جديد");
         await stopScannerInternal(true);
         await startScanner();
       }
-
       function jsonpRequest(params){
         return new Promise((resolve, reject) => {
           const callbackName = "jsonp_callback_" + (++scriptCounter) + "_" + Date.now();
-          const query = new URLSearchParams({ ...params, callback: callbackName });
+          const query = new URLSearchParams({...params, callback: callbackName});
           const script = document.createElement("script");
-          const timeout = setTimeout(() => {
-            cleanup();
-            reject(new Error("timeout"));
-          }, 20000);
-
-          function cleanup(){
-            clearTimeout(timeout);
-            if(script.parentNode) script.parentNode.removeChild(script);
-            try{ delete window[callbackName]; }catch(e){ window[callbackName] = undefined; }
-          }
-
-          window[callbackName] = function(data){
-            cleanup();
-            resolve(data);
-          };
-
+          const timeout = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, 15000);
+          function cleanup(){ clearTimeout(timeout); if(script.parentNode) script.parentNode.removeChild(script); try{ delete window[callbackName]; }catch(e){ window[callbackName] = undefined; } }
+          window[callbackName] = function(data){ cleanup(); resolve(data); };
           script.src = WEB_APP_URL + "?" + query.toString();
-          script.onerror = function(){
-            cleanup();
-            reject(new Error("network"));
-          };
+          script.onerror = function(){ cleanup(); reject(new Error("network")); };
           document.body.appendChild(script);
         });
       }
-
       async function onScanSuccess(decodedText){
         if(scanLocked || isProcessing) return;
-        const qrValue = sanitizeQr(decodedText);
-        if(!qrValue) return;
-
-        scanLocked = true;
-        isProcessing = true;
-        showResult();
+        const qrValue = sanitizeQr(decodedText); if(!qrValue) return;
+        scanLocked = true; isProcessing = true; showResult();
+        setResult("info","تم التقاط الرمز","جارٍ التحقق من حالة الزائر الآن...","جارٍ التحقق");
         showOverlay(true);
-        setResult("info","تم التقاط الرمز","جارٍ التحقق من بيانات الزائر الآن...","جارٍ التحقق");
-
         await stopScannerInternal(true);
-
         try{
-          const res = await jsonpRequest({ action:"scan", qr: qrValue, kiosk: KIOSK_URL });
-          handleScanResponse(res);
+          const res = await jsonpRequest({action:"scan", qr: qrValue, kiosk: KIOSK_URL});
+          handleScanResponse(res, qrValue);
         }catch(err){
           console.error(err);
-          setResult("error","فشل الاتصال بالخدمة","تعذر إكمال العملية حاليًا. اضغط على «مسح جديد» للمحاولة مرة أخرى.","فشل الاتصال");
+          setResult("error","فشل الاتصال بالخدمة","تعذر إكمال العملية حاليًا. اضغط على الزر مرة أخرى للمحاولة من جديد.","فشل الاتصال");
         }finally{
-          isProcessing = false;
-          showOverlay(false);
+          isProcessing = false; showOverlay(false);
         }
       }
-
-      function handleScanResponse(res){
+      function handleScanResponse(res, qrValue){
         const name = res && res.fullName ? " للاسم: " + res.fullName : "";
-        const timeText = res && res.attendanceTime ? " عند الساعة " + res.attendanceTime : "";
-        const firstTimeText = res && res.firstAttendanceTime ? "، ووقت الحضور الأول " + res.firstAttendanceTime : "";
-
+        const inTime = res && res.attendanceTime ? "، ووقت الدخول " + res.attendanceTime : "";
+        const outTime = res && res.checkoutTime ? " عند الساعة " + res.checkoutTime : "";
+        const firstOut = res && res.firstCheckoutTime ? "، ووقت الخروج الأول " + res.firstCheckoutTime : "";
         switch((res && res.state) || ""){
           case "checked_in":
-            setResult("success","تم التحضير بنجاح","تم تسجيل الحضور بنجاح" + name + timeText + ".","تم التحضير");
+            setResult("success","تم التحضير بنجاح","تم تسجيل الدخول بنجاح" + name + inTime + ".","تم التحضير");
             break;
-          case "already_checked_in":
-            setResult("warning","تم التحضير مسبقًا","هذا المشارك مسجل حضوره مسبقًا" + name + firstTimeText + ".","تحضير مسبق");
+          case "pending_early_checkout":
+            setResult("error","تسجيل خروج مبكر","سيتم تسجيل خروج مبكر للزائر" + name + outTime + inTime + ". اضغط اعتماد لتثبيت الخروج المبكر.","خروج مبكر");
+            showConfirm(qrValue, true);
+            break;
+          case "checked_out":
+            setResult("success","تم تسجيل الخروج بنجاح","تم اعتماد تسجيل الخروج بنجاح" + name + outTime + inTime + ".","تم الانصراف");
+            break;
+          case "checked_out_early":
+            setResult("error","تم تسجيل الخروج المبكر بنجاح","تم اعتماد الخروج المبكر بنجاح" + name + outTime + inTime + ".","خروج مبكر");
+            break;
+          case "already_checked_out":
+            setResult("warning","تم تسجيل الانصراف مسبقًا","هذا الزائر تم تسجيل انصرافه مسبقًا" + name + firstOut + ".","انصراف مسبق");
             break;
           case "before_allowed_time":
             setResult("error","خارج الوقت المحدد","لا يمكن تسجيل الحضور الآن" + name + ". المحاولة كانت قبل وقت بداية التحضير المسموح.","خارج الوقت");
@@ -660,34 +285,39 @@
           case "not_found":
             setResult("error","الرمز غير معروف","تعذر العثور على هذا المشارك في قاعدة البيانات. تأكد من صحة البطاقة أو البيانات.","غير موجود");
             break;
+          case "not_checked_in":
+            setResult("error","لا يمكن تسجيل الانصراف","لا يمكن تسجيل الانصراف قبل تسجيل الحضور أولًا.","مرفوض");
+            break;
           default:
             setResult("error","تعذر إكمال العملية",(res && res.message) || "حدث خطأ غير متوقع أثناء معالجة الطلب.","تعذر التنفيذ");
             break;
         }
       }
-
-      function bindEvents(){
-        if(startBtn) startBtn.addEventListener("click", startScanner);
-        if(stopBtn) stopBtn.addEventListener("click", () => stopScannerInternal(false));
-        if(resetBtn) resetBtn.addEventListener("click", resetForNewScan);
-        if(switchBtn) switchBtn.addEventListener("click", switchCamera);
+      async function confirmExit(){
+        if(!pendingExitQr || isProcessing) return;
+        isProcessing = true; showOverlay(true);
+        try{
+          const res = await jsonpRequest({action:"confirmCheckout", qr: pendingExitQr});
+          handleScanResponse(res, pendingExitQr);
+        }catch(err){
+          console.error(err);
+          setResult("error","تعذر اعتماد الانصراف","حدث خطأ أثناء اعتماد الانصراف. حاول مرة أخرى.","تعذر التنفيذ");
+        }finally{
+          isProcessing = false; showOverlay(false);
+        }
       }
-
+      async function handlePrimaryAction(){
+        if(isProcessing) return;
+        if(scanLocked || (resultStage && resultStage.style.display === "flex" && !cameraRunning)){ await resetForNewScan(); return; }
+        if(!cameraRunning){ await startScanner(); return; }
+        await resetForNewScan();
+      }
+      function bindEvents(){ if(primaryBtn) primaryBtn.addEventListener("click", handlePrimaryAction); if(confirmExitBtn) confirmExitBtn.addEventListener("click", confirmExit); }
       function boot(){
-        initRefs();
-        initAudio();
-        if(logoImg) logoImg.src = LOGO_FILE;
-        bindEvents();
-        startClock();
-        showResult();
-        setResult("info","جاهز لقراءة الرمز","اضغط على «تشغيل الكاميرا» لبدء التحضير، وبعد كل عملية استخدم «مسح جديد» لإعادة التشغيل تلقائيًا.","النظام جاهز");
+        initRefs(); initAudio(); if(logoImg) logoImg.src = LOGO_FILE; bindEvents(); startClock(); showResult();
+        setResult("info","جاهز لقراءة الرمز","اضغط على زر «اضغط هنا للتحضير» لفتح الكاميرا الأمامية وبدء القراءة. إذا كان الزائر حاضرًا من قبل فسيتم عرض رسالة الانصراف المناسبة هنا.","النظام جاهز");
       }
-
-      if(document.readyState === "loading"){
-        document.addEventListener("DOMContentLoaded", boot);
-      }else{
-        boot();
-      }
+      if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", boot); } else { boot(); }
     })();
   </script>
 </body>
